@@ -1,0 +1,3213 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Islamic Astronomy For All — แหล่งค้นคว้าความรู้ดาราศาสตร์อิสลาม</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --u: min(calc(100vw / 1448), calc(100dvh / 1086));
+      --bg: #000000;
+      --text: #ffffff;
+      --sub: #bcbcbe;
+      --orange: #ee7f20;
+      --peach: #f7c69b;
+      font-family: 'Inter', 'Noto Sans Thai', system-ui, -apple-system, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      font-synthesis: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100dvh;
+      overflow: hidden;
+      background: #000;
+      color: #fff;
+      user-select: none;
+    }
+
+    /* ====================================================================
+       HERO CONTAINER & ECLIPSE SCENE (Exact 1448x1086 Reference)
+       ==================================================================== */
+    .hero-screen {
+      position: relative;
+      width: 100vw;
+      height: 100dvh;
+      overflow: hidden;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .eclipse-stage {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .eclipse-plate {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      height: calc(1086 * var(--u));
+      min-height: 100dvh;
+      aspect-ratio: 1448 / 1086;
+      width: auto;
+      display: block;
+      object-fit: cover;
+      z-index: 1;
+    }
+
+    .eclipse-video {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      height: calc(1086 * var(--u));
+      min-height: 100dvh;
+      aspect-ratio: 1930 / 1086;
+      width: auto;
+      display: block;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 1.1s ease;
+      z-index: 2;
+    }
+
+    .eclipse-video.is-playing {
+      opacity: 1;
+    }
+
+    .scene-vignette {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 28%, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0.65) 55%, transparent 100%);
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    /* ====================================================================
+       TOP NAVIGATION BAR — iOS SEA-GLASS (TOP RIGHT)
+       ==================================================================== */
+    .top-header {
+      position: relative;
+      z-index: 40;
+      width: 100%;
+      height: calc(118 * var(--u));
+      min-height: 82px;
+      padding: 0 clamp(20px, calc(56 * var(--u)), 68px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      animation: fadeDown 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .brand-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: clamp(18px, calc(24 * var(--u)), 25px);
+      letter-spacing: -0.02em;
+      cursor: pointer;
+    }
+
+    .brand-logo svg {
+      width: clamp(26px, calc(32 * var(--u)), 34px);
+      height: clamp(26px, calc(32 * var(--u)), 34px);
+      filter: drop-shadow(0 0 10px rgba(238, 127, 32, 0.55));
+    }
+
+    .seaglass-nav {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 8px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.06) 100%);
+      backdrop-filter: blur(26px) saturate(190%);
+      -webkit-backdrop-filter: blur(26px) saturate(190%);
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      box-shadow:
+        0 12px 36px rgba(0, 0, 0, 0.55),
+        inset 0 1px 1px rgba(255, 255, 255, 0.38),
+        inset 0 -1px 1px rgba(238, 127, 32, 0.16);
+    }
+
+    .nav-item-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-btn {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.92);
+      font-family: inherit;
+      font-size: clamp(13px, calc(15.5 * var(--u)), 15.5px);
+      font-weight: 500;
+      padding: 9px 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.22s ease;
+      white-space: nowrap;
+    }
+
+    .nav-btn.arabic-nav {
+      font-family: 'Amiri', serif;
+      font-size: clamp(16px, calc(19.5 * var(--u)), 20px);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 6px 18px;
+      color: #ffd7ae;
+    }
+
+    .nav-btn:hover,
+    .nav-btn.active {
+      background: rgba(255, 255, 255, 0.18);
+      color: #fff;
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.35);
+    }
+
+    .nav-btn.menu-highlight {
+      background: linear-gradient(180deg, rgba(242, 138, 42, 0.92) 0%, rgba(236, 122, 28, 0.92) 100%);
+      color: #fff;
+      font-weight: 600;
+      border: 1px solid rgba(255, 225, 195, 0.45);
+      box-shadow: 0 4px 16px rgba(238, 127, 32, 0.4);
+    }
+
+    .nav-btn.menu-highlight:hover {
+      box-shadow: 0 6px 22px rgba(238, 127, 32, 0.7);
+      transform: translateY(-1px);
+    }
+
+    .chevron {
+      font-size: 10px;
+      opacity: 0.75;
+      transition: transform 0.22s ease;
+    }
+
+    .nav-item-wrap:hover .chevron,
+    .nav-item-wrap.open .chevron {
+      transform: rotate(180deg);
+    }
+
+    .seaglass-dropdown {
+      position: absolute;
+      top: calc(100% + 12px);
+      right: 0;
+      min-width: 285px;
+      padding: 8px;
+      border-radius: 22px;
+      background: linear-gradient(145deg, rgba(28, 26, 25, 0.86) 0%, rgba(14, 13, 12, 0.94) 100%);
+      backdrop-filter: blur(30px) saturate(200%);
+      -webkit-backdrop-filter: blur(30px) saturate(200%);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      box-shadow:
+        0 22px 54px rgba(0, 0, 0, 0.78),
+        inset 0 1px 0 rgba(255, 255, 255, 0.28);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(8px) scale(0.97);
+      transform-origin: top right;
+      transition: all 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+      z-index: 100;
+    }
+
+    .seaglass-dropdown::before {
+      content: "";
+      position: absolute;
+      top: -14px;
+      left: 0;
+      right: 0;
+      height: 14px;
+    }
+
+    .nav-item-wrap:hover .seaglass-dropdown,
+    .nav-item-wrap.open .seaglass-dropdown {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+    }
+
+    .drop-item {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: #fff;
+      font-family: inherit;
+      text-align: left;
+      padding: 12px 16px;
+      border-radius: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      transition: background 0.18s ease, transform 0.18s ease;
+    }
+
+    .drop-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateX(2px);
+    }
+
+    .drop-text strong {
+      display: block;
+      font-size: 13.8px;
+      font-weight: 600;
+      color: #fff;
+      letter-spacing: -0.01em;
+    }
+
+    .drop-text span {
+      display: block;
+      font-size: 11.5px;
+      color: rgba(255, 255, 255, 0.52);
+      margin-top: 3px;
+    }
+
+    /* ====================================================================
+       HERO COPY STACK (Badge, Headline, Subline, Single "Start" Button)
+       ==================================================================== */
+    .hero-copy {
+      position: relative;
+      z-index: 10;
+      margin-top: calc(36 * var(--u));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 0 24px;
+      max-width: calc(1140 * var(--u));
+    }
+
+    .eclipse-badge {
+      height: clamp(36px, calc(43.9 * var(--u)), 46px);
+      padding: 0 clamp(18px, calc(24 * var(--u)), 26px);
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(35, 23, 15, 0.78) 0%, rgba(16, 11, 8, 0.9) 100%);
+      border: 1px solid rgba(238, 127, 32, 0.45);
+      box-shadow:
+        -6px 6px 18px rgba(238, 127, 32, 0.25),
+        inset 0 1px 1px rgba(255, 255, 255, 0.28),
+        inset -4px -4px 12px rgba(238, 127, 32, 0.22);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: clamp(13px, calc(15.6 * var(--u)), 16px);
+      color: #d6d6d8;
+      backdrop-filter: blur(12px);
+      animation: settleBadge 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
+    }
+
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--peach);
+      box-shadow: 0 0 10px var(--peach), 0 0 18px var(--orange);
+    }
+
+    .hero-headline {
+      margin-top: clamp(18px, calc(26 * var(--u)), 30px);
+      font-size: clamp(38px, calc(78.8 * var(--u)), 82px);
+      line-height: 1.06;
+      font-weight: 800;
+      letter-spacing: -0.028em;
+      color: #ffffff;
+      text-shadow: 0 10px 38px rgba(0, 0, 0, 0.75);
+      animation: riseUp 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.24s both;
+    }
+
+    .hero-subline {
+      margin-top: clamp(16px, calc(24 * var(--u)), 28px);
+      font-size: clamp(15.5px, calc(22.6 * var(--u)), 23px);
+      line-height: 1.6;
+      letter-spacing: 0.02em;
+      color: var(--sub);
+      max-width: 760px;
+      font-weight: 400;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.85);
+      animation: riseUp 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.36s both;
+    }
+
+    .hero-actions {
+      margin-top: clamp(24px, calc(36 * var(--u)), 40px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: riseUp 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.48s both;
+    }
+
+    .start-pill-btn {
+      height: clamp(48px, calc(55.4 * var(--u)), 58px);
+      padding: 0 clamp(38px, calc(52 * var(--u)), 58px);
+      border-radius: 999px;
+      background: linear-gradient(180deg, #f28a2a 0%, #ec7a1c 100%);
+      border: 1px solid rgba(255, 255, 255, 0.42);
+      color: #ffffff;
+      font-family: inherit;
+      font-size: clamp(16px, calc(19 * var(--u)), 20px);
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow:
+        0 10px 30px rgba(238, 127, 32, 0.45),
+        inset 0 1px 1px rgba(255, 255, 255, 0.45);
+      transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease;
+    }
+
+    .start-pill-btn:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow:
+        0 0 36px rgba(242, 138, 42, 0.85),
+        0 14px 40px rgba(236, 122, 28, 0.65),
+        inset 0 1px 2px rgba(255, 255, 255, 0.65);
+    }
+
+    .start-pill-btn:active {
+      transform: translateY(0) scale(0.99);
+    }
+
+    /* ====================================================================
+       START LAUNCHER HUB OVERLAY (Opens when clicking "Start")
+       ==================================================================== */
+    .hub-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      background: rgba(0, 0, 0, 0.62);
+      backdrop-filter: blur(22px) saturate(160%);
+      -webkit-backdrop-filter: blur(22px) saturate(160%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .hub-backdrop.is-open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .hub-window {
+      width: min(1040px, 95vw);
+      max-height: 86dvh;
+      overflow-y: auto;
+      padding: 32px;
+      border-radius: 32px;
+      background: linear-gradient(145deg, rgba(32, 28, 26, 0.78) 0%, rgba(12, 11, 10, 0.9) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.85),
+        inset 0 1px 1px rgba(255, 255, 255, 0.35);
+      transform: translateY(18px) scale(0.96);
+      transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .hub-backdrop.is-open .hub-window {
+      transform: translateY(0) scale(1);
+    }
+
+    .hub-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .hub-header h2 {
+      font-size: clamp(20px, 2.4vw, 26px);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .close-circle-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .close-circle-btn:hover {
+      background: rgba(238, 127, 32, 0.85);
+      border-color: #fff;
+    }
+
+    .hub-section-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--peach);
+      margin: 18px 0 12px;
+    }
+
+    .hub-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px;
+    }
+
+    .hub-card {
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.015) 100%);
+      border-radius: 18px;
+      padding: 20px 22px;
+      text-align: left;
+      color: #fff;
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.22s ease;
+    }
+
+    .hub-card:hover {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.11) 0%, rgba(238, 127, 32, 0.08) 100%);
+      border-color: rgba(242, 138, 42, 0.55);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+    }
+
+    .hub-card h3 {
+      font-size: 15.5px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .hub-card p {
+      font-size: 12.5px;
+      color: rgba(255, 255, 255, 0.66);
+      line-height: 1.45;
+    }
+
+    /* ====================================================================
+       FULL CONTENT MODAL OVERLAY (iOS Sea-Glass Content Views)
+       ==================================================================== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 120;
+      background: rgba(0, 0, 0, 0.78);
+      backdrop-filter: blur(28px) saturate(180%);
+      -webkit-backdrop-filter: blur(28px) saturate(180%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(12px, 2.2vw, 28px);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .modal-overlay.is-open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-sheet {
+      width: min(1240px, 96vw);
+      height: min(88dvh, 920px);
+      border-radius: 30px;
+      background: linear-gradient(160deg, rgba(26, 24, 23, 0.9) 0%, rgba(10, 9, 9, 0.95) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      box-shadow:
+        0 32px 90px rgba(0, 0, 0, 0.9),
+        inset 0 1px 1px rgba(255, 255, 255, 0.3);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transform: translateY(16px) scale(0.97);
+      transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .modal-overlay.is-open .modal-sheet {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal-topbar {
+      padding: 18px 26px;
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+
+    .modal-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .modal-badge {
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(238, 127, 32, 0.2);
+      border: 1px solid rgba(238, 127, 32, 0.45);
+      color: var(--peach);
+    }
+
+    .modal-title {
+      font-size: clamp(18px, 2vw, 23px);
+      font-weight: 700;
+    }
+
+    .modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: clamp(18px, 2.5vw, 32px);
+      user-select: text;
+    }
+
+    .modal-body::-webkit-scrollbar,
+    .hub-window::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .modal-body::-webkit-scrollbar-thumb,
+    .hub-window::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 999px;
+    }
+
+    /* ====================================================================
+       SHARED UI COMPONENTS INSIDE MODALS
+       ==================================================================== */
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.045);
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      border-radius: 20px;
+      padding: 22px;
+      margin-bottom: 20px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+    }
+
+    .quran-box {
+      background: linear-gradient(135deg, rgba(238, 127, 32, 0.12) 0%, rgba(255, 255, 255, 0.03) 100%);
+      border: 1px solid rgba(238, 127, 32, 0.35);
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .quran-arabic {
+      font-family: 'Amiri', serif;
+      font-size: clamp(22px, 2.4vw, 29px);
+      line-height: 1.85;
+      color: #ffd9b3;
+      text-align: right;
+      direction: rtl;
+      margin-bottom: 10px;
+    }
+
+    .quran-thai {
+      font-size: 14.5px;
+      line-height: 1.65;
+      color: #ececef;
+    }
+
+    .quran-ref {
+      margin-top: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--orange);
+    }
+
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: flex-end;
+      margin-bottom: 18px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+      min-width: 170px;
+    }
+
+    .form-group label {
+      font-size: 12.5px;
+      color: var(--sub);
+      font-weight: 500;
+    }
+
+    .seaglass-input,
+    .seaglass-select {
+      height: 42px;
+      padding: 0 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      background: rgba(0, 0, 0, 0.55);
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .seaglass-input:focus,
+    .seaglass-select:focus,
+    .seaglass-textarea:focus {
+      border-color: var(--orange);
+    }
+
+    .seaglass-textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      background: rgba(0, 0, 0, 0.55);
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      line-height: 1.6;
+      resize: vertical;
+      outline: none;
+    }
+
+    .action-btn {
+      height: 42px;
+      padding: 0 22px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: linear-gradient(180deg, #f28a2a 0%, #ec7a1c 100%);
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .action-btn:hover {
+      box-shadow: 0 0 20px rgba(238, 127, 32, 0.6);
+    }
+
+    .stat-card {
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .stat-card .val {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--peach);
+      margin: 4px 0;
+    }
+
+    .stat-card .lbl {
+      font-size: 12px;
+      color: var(--sub);
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+    }
+
+    .data-table th,
+    .data-table td {
+      padding: 11px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      text-align: left;
+    }
+
+    .data-table th {
+      color: var(--peach);
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      background: #161413;
+      z-index: 2;
+    }
+
+    .data-table tr:hover td {
+      background: rgba(238, 127, 32, 0.09);
+    }
+
+    .tag-pill {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(238, 127, 32, 0.2);
+      color: #ffcaa0;
+      border: 1px solid rgba(238, 127, 32, 0.38);
+    }
+
+    .sim-canvas-wrap {
+      position: relative;
+      width: 100%;
+      height: 360px;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #000;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      margin-bottom: 16px;
+    }
+
+    .sim-canvas-wrap canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .stage-Buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .stage-btn {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+      font-family: inherit;
+      font-size: 12.5px;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .stage-btn.active,
+    .stage-btn:hover {
+      background: var(--orange);
+      border-color: #fff;
+      font-weight: 600;
+    }
+
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .cal-cell {
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 10px 8px;
+      min-height: 70px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .cal-cell.today {
+      border-color: var(--orange);
+      background: rgba(238, 127, 32, 0.18);
+    }
+
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes settleBadge {
+      from { opacity: 0; transform: translateY(12px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes riseUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 820px) {
+      .top-header {
+        padding: 0 14px;
+      }
+      .brand-logo span {
+        display: none;
+      }
+      .seaglass-nav {
+        gap: 2px;
+        padding: 4px 6px;
+      }
+      .nav-btn {
+        padding: 7px 10px;
+        font-size: 12px;
+      }
+      .nav-btn.arabic-nav {
+        font-size: 14.5px;
+        padding: 5px 10px;
+      }
+      .hero-headline {
+        font-size: clamp(32px, 8.8vw, 48px);
+      }
+      .hero-subline {
+        font-size: 15px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ====================================================================
+       MAIN ONE-SCREEN ECLIPSIO HERO
+       ==================================================================== -->
+  <main class="hero-screen">
+
+    <!-- 1. Top Navigation Bar (iOS Sea-Glass positioned Top-Right) -->
+    <header class="top-header">
+      <a class="brand-logo" onclick="closeAllOverlays()">
+        <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="18" cy="18" r="14" stroke="url(#eclipseGrad)" stroke-width="2.5"/>
+          <path d="M11 14V20C11 23.866 14.134 27 18 27C21.866 27 25 23.866 25 20V14" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>
+          <circle cx="24" cy="10" r="3" fill="#f7c69b"/>
+          <defs>
+            <linearGradient id="eclipseGrad" x1="4" y1="32" x2="32" y2="4" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#f28a2a"/>
+              <stop offset="1" stop-color="#ffffff" stop-opacity="0.25"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span>Al-Falak</span>
+      </a>
+
+      <!-- Right-aligned iOS Sea-Glass Navigation Bar -->
+      <!-- Order from left to right so that เมนู (Menu) is furthest right:
+           หน้าหลัก | ติดต่อ | السماء في القرآن | การคำนวณ | เมนู -->
+      <nav class="seaglass-nav" aria-label="Primary Navigation">
+        <button class="nav-btn active" type="button" onclick="closeAllOverlays()">หน้าหลัก</button>
+        <button class="nav-btn" type="button" onclick="openModal('contact')">ติดต่อ</button>
+        <button class="nav-btn arabic-nav" type="button" onclick="openModal('quran')">السماء في القرآن</button>
+
+        <!-- Dropdown: การคำนวณ -->
+        <div class="nav-item-wrap" id="calcDropdownWrap">
+          <button class="nav-btn" type="button" onclick="toggleDropdown('calcDropdownWrap', event)">
+            การคำนวณ <span class="chevron">▾</span>
+          </button>
+          <div class="seaglass-dropdown">
+            <button class="drop-item" type="button" onclick="openModal('qibla')">
+              <span class="drop-text">
+                <strong>ทิศกิบลัต</strong>
+                <span>คำนวณมุมทิศและระยะทางทั้ง 77 จังหวัด</span>
+              </span>
+            </button>
+            <button class="drop-item" type="button" onclick="openModal('prayer')">
+              <span class="drop-text">
+                <strong>เวลาละหมาด</strong>
+                <span>คำนวณเวลาศอลาต 5 เวลาตามพิกัดจังหวัด</span>
+              </span>
+            </button>
+            <button class="drop-item" type="button" onclick="openModal('hijri')">
+              <span class="drop-text">
+                <strong>ปฏิทินฮิจเราะห์</strong>
+                <span>เทียบวันเกิดย้อนหลัง ค.ศ./พ.ศ. เป็น ฮ.ศ.</span>
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Dropdown: เมนู (Furthest Right) -->
+        <div class="nav-item-wrap" id="menuDropdownWrap">
+          <button class="nav-btn menu-highlight" type="button" onclick="toggleDropdown('menuDropdownWrap', event)">
+            เมนู <span class="chevron">▾</span>
+          </button>
+          <div class="seaglass-dropdown">
+            <button class="drop-item" type="button" onclick="openModal('cosmology')">
+              <span class="drop-text">
+                <strong>การกำเนิดจักรวาล</strong>
+                <span>จำลอง 3 มิติ กำเนิด-สิ้นสุดจักรวาล และอัลกุรอาน</span>
+              </span>
+            </button>
+            <button class="drop-item" type="button" onclick="openModal('history')">
+              <span class="drop-text">
+                <strong>ประวัติศาสตร์ดาราศาสตร์อิสลาม</strong>
+                <span>8 ปราชญ์มุสลิมยุคทองและการส่งต่อความรู้สู่ยุโรป</span>
+              </span>
+            </button>
+            <button class="drop-item" type="button" onclick="openModal('stars88')">
+              <span class="drop-text">
+                <strong>ชื่อดวงดาวภาษาอาหรับ</strong>
+                <span>ครบ 88 กลุ่มดาว (อาหรับ-ไทย-อังกฤษ) และประโยชน์ศาสนกิจ</span>
+              </span>
+            </button>
+            <button class="drop-item" type="button" onclick="openModal('sphere')">
+              <span class="drop-text">
+                <strong>ทรงกลมท้องฟ้า</strong>
+                <span>ระบบพิกัดขอบฟ้า ศูนย์สูตรฟ้า และสามเหลี่ยมทรงกลม</span>
+              </span>
+            </button>
+            <button class="drop-item" type="button" onclick="openModal('hilal')">
+              <span class="drop-text">
+                <strong>การคาดการณ์เห็นจันทร์เสี้ยว</strong>
+                <span>เกณฑ์อิสติฮ์ลาล มุมเงย และมุมห่างดวงอาทิตย์</span>
+              </span>
+            </button>
+            <button class="drop-item" type="button" onclick="openModal('apologetics')">
+              <span class="drop-text">
+                <strong>ตอบโต้แนวคิดวัตถุนิยมและเอทิสต์</strong>
+                <span>วิเคราะห์ทฤษฎีจักรวาลเกิดเอง ไอน์สไตน์ และกฎฮับเบิล</span>
+              </span>
+            </button>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <!-- 2. Center Hero Copy -->
+    <section class="hero-copy">
+      <div class="eclipse-badge">
+        <span class="badge-dot"></span>
+        <span>AL-FALAK PRACTICAL ASTRONOMY & COSMOLOGY</span>
+      </div>
+
+      <h1 class="hero-headline">Islamic Astronomy For All</h1>
+
+      <p class="hero-subline">
+        หากคุณมีความสงสัยหรืออยากเรียนรู้ดาราศาสตร์อิสลาม คุณสามารถมาค้นหาความรู้กับเราได้
+      </p>
+
+      <div class="hero-actions">
+        <button class="start-pill-btn" type="button" onclick="openStartHub()">
+          <span>Start</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M13 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- 3. Bottom Eclipse Scene (Exact Plate + Looping Video) -->
+    <div class="eclipse-stage" aria-hidden="true">
+      <img
+        class="eclipse-plate"
+        src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/b4b7e033-b082-4f09-8ec4-2fabca30c4b4.webp"
+        alt=""
+      />
+      <video
+        id="eclipseVideo"
+        class="eclipse-video"
+        src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/48106c12-33c9-4cea-9780-4a080477405e.mp4"
+        muted
+        loop
+        playsinline
+        preload="auto"
+      ></video>
+      <div class="scene-vignette"></div>
+    </div>
+
+  </main>
+
+  <!-- ====================================================================
+       START HUB OVERLAY (Opens when clicking "Start")
+       ==================================================================== -->
+  <div class="hub-backdrop" id="startHubBackdrop" onclick="if(event.target===this) closeStartHub()">
+    <div class="hub-window">
+      <div class="hub-header">
+        <h2>หมวดหมู่การเรียนรู้และระบบคำนวณดาราศาสตร์อิสลาม</h2>
+        <button class="close-circle-btn" type="button" onclick="closeStartHub()">✕</button>
+      </div>
+
+      <div class="hub-section-label">หมวดความรู้ดาราศาสตร์และจักรวาลวิทยา (เมนูหลัก)</div>
+      <div class="hub-grid">
+        <button class="hub-card" type="button" onclick="openModal('cosmology')">
+          <div>
+            <h3>การกำเนิดจักรวาล (3D Simulation)</h3>
+            <p>จำลอง 3 มิติ กำเนิด-สิ้นสุดจักรวาล 6 ระยะ (อัร-ร็อตก็อ, บิกแบง, ดุคอน, การขยายตัว และการพับม้วนท้องฟ้า)</p>
+          </div>
+        </button>
+        <button class="hub-card" type="button" onclick="openModal('history')">
+          <div>
+            <h3>ประวัติศาสตร์ดาราศาสตร์อิสลาม</h3>
+            <p>ความหมายของวิชาอัลฟาลัก ผลงานปราชญ์มุสลิมยุคทอง 8 ท่าน และการส่งต่อวิทยาการสู่ยุโรป</p>
+          </div>
+        </button>
+        <button class="hub-card" type="button" onclick="openModal('stars88')">
+          <div>
+            <h3>ชื่อดวงดาวภาษาอาหรับ (ครบ 88 กลุ่มดาว)</h3>
+            <p>ตารางกลุ่มดาวทั้ง 88 กลุ่ม (อาหรับ-ไทย-อังกฤษ) ดาวฤกษ์รากศัพท์อาหรับ และประโยชน์ในการทำศาสนกิจ</p>
+          </div>
+        </button>
+        <button class="hub-card" type="button" onclick="openModal('sphere')">
+          <div>
+            <h3>ทรงกลมท้องฟ้า และสามเหลี่ยมทรงกลม</h3>
+            <p>ระบบพิกัดขอบฟ้า พิกัดศูนย์สูตรฟ้า กฎของโคไซน์ กฎของไซน์ และอนาโลยีของเนเปียร์</p>
+          </div>
+        </button>
+        <button class="hub-card" type="button" onclick="openModal('hilal')">
+          <div>
+            <h3>การคาดการณ์เห็นจันทร์เสี้ยว (ฮิลาล)</h3>
+            <p>จำลองขอบฟ้าทิศตะวันตก คำนวณมุมเงยและมุมห่างดวงอาทิตย์เพื่อกำหนดวันเริ่มต้นเดือนกอมารียะฮ์</p>
+          </div>
+        </button>
+        <button class="hub-card" type="button" onclick="openModal('quran')">
+          <div>
+            <h3>السماء في القرآن (ดาราศาสตร์ในอัลกุรอาน)</h3>
+            <p>คลังโองการอัลกุรอานที่กล่าวถึงฟากฟ้า แผ่นดิน วงโคจร ดวงอาทิตย์ ดวงจันทร์ และวิวัฒนาการของเอกภพ</p>
+          </div>
+        </button>
+        <button class="hub-card" type="button" onclick="openModal('apologetics')">
+          <div>
+            <h3>ตอบโต้แนวคิดวัตถุนิยมและเอทิสต์</h3>
+            <p>วิเคราะห์และหักล้างแนวคิดจักรวาลไร้ผู้สร้าง ค่าคงที่ไอน์สไตน์ ทฤษฎีสภาวะคงที่ กฎฮับเบิล และความสมดุลของเอกภพ</p>
+          </div>
+        </button>
+      </div>
+
+      <div class="hub-section-label">ระบบคำนวณดาราศาสตร์ปฏิบัติ (ครบ 77 จังหวัดทั่วไทย)</div>
+      <div class="hub-grid">
+        <button class="hub-card" type="button" onclick="openModal('qibla')">
+          <div>
+            <h3>คำนวณทิศกิบลัต</h3>
+            <p>เลือกจังหวัดของคุณเพื่อคำนวณมุมทิศกิบลัต ระยะทางโค้งวงกลมใหญ่ถึงมักกะฮ์ และแสดงวิธีทำละเอียด</p>
+          </div>
+        </button>
+        <button class="hub-card" type="button" onclick="openModal('prayer')">
+          <div>
+            <h3>คำนวณเวลาละหมาด</h3>
+            <p>คำนวณเวลาซุบฮิ ดวงอาทิตย์ขึ้น ซุฮ์ริ อัศริ มัฆริบ และอิชาอ์ ตามค่าละติจูดและลองจิจูดของแต่ละจังหวัด</p>
+          </div>
+        </button>
+        <button class="hub-card" type="button" onclick="openModal('hijri')">
+          <div>
+            <h3>ปฏิทินฮิจเราะห์ และค้นหาวันเกิดฮิจเราะห์</h3>
+            <p>เลือกวันเดือนปีเกิดย้อนหลัง (ค.ศ./พ.ศ.) เพื่อคำนวณหาวันที่ เดือน และปีฮิจเราะห์ศักราช พร้อมปฏิทินรายเดือน</p>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       UNIVERSAL CONTENT MODAL OVERLAY
+       ==================================================================== -->
+  <div class="modal-overlay" id="mainModalOverlay" onclick="if(event.target===this) closeModal()">
+    <div class="modal-sheet">
+      <div class="modal-topbar">
+        <div class="modal-title-group">
+          <span class="modal-badge" id="modalBadge">AL-FALAK</span>
+          <h2 class="modal-title" id="modalTitle">หัวข้อ</h2>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <button class="stage-btn" type="button" onclick="openStartHub()">เมนูทั้งหมด</button>
+          <button class="close-circle-btn" type="button" onclick="closeModal()">✕</button>
+        </div>
+      </div>
+      <div class="modal-body" id="modalBodyContent"></div>
+    </div>
+  </div>
+
+  <script>
+    /* ====================================================================
+       1. ECLIPSE VIDEO FADE-IN LOGIC
+       ==================================================================== */
+    const eclipseVideo = document.getElementById('eclipseVideo');
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!prefersReducedMotion && eclipseVideo) {
+      eclipseVideo.addEventListener('playing', () => {
+        eclipseVideo.classList.add('is-playing');
+      });
+      eclipseVideo.play().catch(() => {
+        window.addEventListener('pointerdown', () => eclipseVideo.play().catch(() => {}), { once: true });
+      });
+    }
+
+    /* ====================================================================
+       2. NAVIGATION & OVERLAY CONTROLLERS
+       ==================================================================== */
+    function toggleDropdown(id, e) {
+      e.stopPropagation();
+      const el = document.getElementById(id);
+      const isOpen = el.classList.contains('open');
+      document.querySelectorAll('.nav-item-wrap').forEach(w => w.classList.remove('open'));
+      if (!isOpen) el.classList.add('open');
+    }
+
+    window.addEventListener('click', () => {
+      document.querySelectorAll('.nav-item-wrap').forEach(w => w.classList.remove('open'));
+    });
+
+    function openStartHub() {
+      closeModal();
+      document.getElementById('startHubBackdrop').classList.add('is-open');
+    }
+
+    function closeStartHub() {
+      document.getElementById('startHubBackdrop').classList.remove('is-open');
+    }
+
+    function closeAllOverlays() {
+      closeStartHub();
+      closeModal();
+    }
+
+    let activeSimAnim = null;
+    function closeModal() {
+      document.getElementById('mainModalOverlay').classList.remove('is-open');
+      if (activeSimAnim) {
+        cancelAnimationFrame(activeSimAnim);
+        activeSimAnim = null;
+      }
+    }
+
+    /* ====================================================================
+       3. DATABASE: 77 THAI PROVINCES (LATITUDE & LONGITUDE)
+       ==================================================================== */
+    const THAI_PROVINCES = [
+      { name: "ปัตตานี (Pattani)", lat: 6.8695, lon: 101.2505 },
+      { name: "นราธิวาส (Narathiwat)", lat: 6.4255, lon: 101.8253 },
+      { name: "ยะลา (Yala)", lat: 6.5411, lon: 101.2804 },
+      { name: "สงขลา (Songkhla)", lat: 7.1898, lon: 100.5954 },
+      { name: "สตูล (Satun)", lat: 6.6238, lon: 100.0674 },
+      { name: "กรุงเทพมหานคร (Bangkok)", lat: 13.7563, lon: 100.5018 },
+      { name: "กระบี่ (Krabi)", lat: 8.0863, lon: 98.9063 },
+      { name: "กาญจนบุรี (Kanchanaburi)", lat: 14.0228, lon: 99.5328 },
+      { name: "กาฬสินธุ์ (Kalasin)", lat: 16.4314, lon: 103.5059 },
+      { name: "กำแพงเพชร (Kamphaeng Phet)", lat: 16.4828, lon: 99.5227 },
+      { name: "ขอนแก่น (Khon Kaen)", lat: 16.4419, lon: 102.8360 },
+      { name: "จันทบุรี (Chanthaburi)", lat: 12.6114, lon: 102.1039 },
+      { name: "ฉะเชิงเทรา (Chachoengsao)", lat: 13.6904, lon: 101.0780 },
+      { name: "ชลบุรี (Chon Buri)", lat: 13.3611, lon: 100.9847 },
+      { name: "ชัยนาท (Chai Nat)", lat: 15.1852, lon: 100.1251 },
+      { name: "ชัยภูมิ (Chaiyaphum)", lat: 15.8068, lon: 102.0315 },
+      { name: "ชุมพร (Chumphon)", lat: 10.4930, lon: 99.1800 },
+      { name: "เชียงราย (Chiang Rai)", lat: 19.9105, lon: 99.8406 },
+      { name: "เชียงใหม่ (Chiang Mai)", lat: 18.7883, lon: 98.9853 },
+      { name: "ตรัง (Trang)", lat: 7.5594, lon: 99.6114 },
+      { name: "ตราด (Trat)", lat: 12.2428, lon: 102.5175 },
+      { name: "ตาก (Tak)", lat: 16.8840, lon: 99.1258 },
+      { name: "นครนายก (Nakhon Nayok)", lat: 14.2069, lon: 101.2131 },
+      { name: "นครปฐม (Nakhon Pathom)", lat: 13.8199, lon: 100.0622 },
+      { name: "นครพนม (Nakhon Phanom)", lat: 17.3920, lon: 104.7695 },
+      { name: "นครราชสีมา (Nakhon Ratchasima)", lat: 14.9799, lon: 102.0978 },
+      { name: "นครศรีธรรมราช (Nakhon Si Thammarat)", lat: 8.4304, lon: 99.9631 },
+      { name: "นครสวรรค์ (Nakhon Sawan)", lat: 15.6930, lon: 100.1226 },
+      { name: "นนทบุรี (Nonthaburi)", lat: 13.8621, lon: 100.5144 },
+      { name: "น่าน (Nan)", lat: 18.7756, lon: 100.7730 },
+      { name: "บึงกาฬ (Bueng Kan)", lat: 18.3609, lon: 103.6464 },
+      { name: "บุรีรัมย์ (Buri Ram)", lat: 14.9930, lon: 103.1029 },
+      { name: "ปทุมธานี (Pathum Thani)", lat: 14.0208, lon: 100.5250 },
+      { name: "ประจวบคีรีขันธ์ (Prachuap Khiri Khan)", lat: 11.8124, lon: 99.7973 },
+      { name: "ปราจีนบุรี (Prachin Buri)", lat: 14.0509, lon: 101.3717 },
+      { name: "พระนครศรีอยุธยา (Phra Nakhon Si Ayutthaya)", lat: 14.3532, lon: 100.5684 },
+      { name: "พะเยา (Phayao)", lat: 19.1665, lon: 99.9020 },
+      { name: "พังงา (Phangnga)", lat: 8.4501, lon: 98.5255 },
+      { name: "พัทลุง (Phatthalung)", lat: 7.6167, lon: 100.0740 },
+      { name: "พิจิตร (Phichit)", lat: 16.4429, lon: 100.3488 },
+      { name: "พิษณุโลก (Phitsanulok)", lat: 16.8211, lon: 100.2659 },
+      { name: "เพชรบุรี (Phetchaburi)", lat: 13.1119, lon: 99.9398 },
+      { name: "เพชรบูรณ์ (Phetchabun)", lat: 16.4190, lon: 101.1561 },
+      { name: "แพร่ (Phrae)", lat: 18.1446, lon: 100.1403 },
+      { name: "ภูเก็ต (Phuket)", lat: 7.8804, lon: 98.3923 },
+      { name: "มหาสารคาม (Maha Sarakham)", lat: 16.1851, lon: 103.3026 },
+      { name: "มุกดาหาร (Mukdahan)", lat: 16.5424, lon: 104.7209 },
+      { name: "แม่ฮ่องสอน (Mae Hong Son)", lat: 19.3020, lon: 97.9654 },
+      { name: "ยโสธร (Yasothon)", lat: 15.7926, lon: 104.1453 },
+      { name: "ร้อยเอ็ด (Roi Et)", lat: 16.0538, lon: 103.6520 },
+      { name: "ระนอง (Ranong)", lat: 9.9658, lon: 98.6348 },
+      { name: "ระยอง (Rayong)", lat: 12.6814, lon: 101.2816 },
+      { name: "ราชบุรี (Ratchaburi)", lat: 13.5283, lon: 99.8134 },
+      { name: "ลพบุรี (Lop Buri)", lat: 14.7995, lon: 100.6534 },
+      { name: "ลำปาง (Lampang)", lat: 18.2888, lon: 99.4909 },
+      { name: "ลำพูน (Lamphun)", lat: 18.5745, lon: 99.0087 },
+      { name: "เลย (Loei)", lat: 17.4860, lon: 101.7223 },
+      { name: "ศรีสะเกษ (Si Sa Ket)", lat: 15.1186, lon: 104.3220 },
+      { name: "สกลนคร (Sakon Nakhon)", lat: 17.1546, lon: 104.1348 },
+      { name: "สมุทรปราการ (Samut Prakan)", lat: 13.5991, lon: 100.5998 },
+      { name: "สมุทรสงคราม (Samut Songkhram)", lat: 13.4098, lon: 100.0023 },
+      { name: "สมุทรสาคร (Samut Sakhon)", lat: 13.5475, lon: 100.2744 },
+      { name: "สระแก้ว (Sa Kaeo)", lat: 13.8240, lon: 102.0646 },
+      { name: "สระบุรี (Saraburi)", lat: 14.5289, lon: 100.9101 },
+      { name: "สิงห์บุรี (Sing Buri)", lat: 14.8936, lon: 100.3967 },
+      { name: "สุโขทัย (Sukhothai)", lat: 17.0056, lon: 99.8264 },
+      { name: "สุพรรณบุรี (Suphan Buri)", lat: 14.4745, lon: 100.1177 },
+      { name: "สุราษฎร์ธานี (Surat Thani)", lat: 9.1382, lon: 99.3217 },
+      { name: "สุรินทร์ (Surin)", lat: 14.8829, lon: 103.4937 },
+      { name: "หนองคาย (Nong Khai)", lat: 17.8783, lon: 102.7420 },
+      { name: "หนองบัวลำภู (Nong Bua Lam Phu)", lat: 17.2041, lon: 102.4407 },
+      { name: "อ่างทอง (Ang Thong)", lat: 14.5896, lon: 100.4551 },
+      { name: "อำนาจเจริญ (Amnat Charoen)", lat: 15.8657, lon: 104.6258 },
+      { name: "อุดรธานี (Udon Thani)", lat: 17.4138, lon: 102.7872 },
+      { name: "อุตรดิตถ์ (Uttaradit)", lat: 17.6201, lon: 100.0993 },
+      { name: "อุทัยธานี (Uthai Thani)", lat: 15.3835, lon: 100.0246 },
+      { name: "อุบลราชธานี (Ubon Ratchathani)", lat: 15.2287, lon: 104.8564 }
+    ];
+
+    /* ====================================================================
+       4. DATABASE: ALL 88 CONSTELLATIONS (ARABIC, THAI, ENGLISH & ISLAMIC UTILITY)
+       ==================================================================== */
+    const CONSTELLATIONS_88 = [
+      { no:1, en:"Andromeda", mean:"The Princess", th:"แอนโดรเมดา", ar:"المرأة المسلسلة", tr:"Al-Mara'ah Al-Musalsalah", z:false, use:"ใช้สังเกตบอกตำแหน่งซีกฟ้าเหนือและอ้างอิงเวลาดาราในฤดูใบไม้ร่วง" },
+      { no:2, en:"Antlia", mean:"The Air Pump", th:"เครื่องสูบลม", ar:"مفرغة الهواء", tr:"Mefraghat Al-Hawa'", z:false, use:"กลุ่มดาวซีกฟ้าใต้ ใช้ประกอบการอ้างอิงพิกัดขอบฟ้าทางทิศใต้" },
+      { no:3, en:"Apus", mean:"The Bird of Paradise", th:"นกวายุภักษ์", ar:"طائر الفردوس", tr:"Tta'er Al-Ferdaws", z:false, use:"กลุ่มดาวใกล้ขั้วฟ้าใต้ ช่วยอ้างอิงทิศใต้ในการเดินเรือทะเล" },
+      { no:4, en:"Aquarius", mean:"The Water Bearer", th:"คนแบกหม้อน้ำ", ar:"الدلو", tr:"Ad-Dalw", z:true, use:"กลุ่มดาวจักรราศีบนแนวสุริยวิถี (Ecliptic) ใช้ติดตามตำแหน่งดวงอาทิตย์และดวงจันทร์เพื่อกำหนดเดือนจันทรคติและฤดูกาล" },
+      { no:5, en:"Aquila", mean:"The Eagle", th:"นกอินทรี", ar:"العقاب", tr:"Al-'Okab", z:false, use:"มีดาวฤกษ์สว่าง อัต-ฏออิร (Altair) ใช้คำนวณเวลาละหมาดเวลากลางคืนและหาทิศตะวันออก-ตะวันตก" },
+      { no:6, en:"Ara", mean:"The Altar", th:"แท่นบูชา", ar:"المجمرة", tr:"Al-Mijmarah", z:false, use:"ใช้สังเกตการณ์ท้องฟ้าซีกใต้ในช่วงค่ำของฤดูร้อน" },
+      { no:7, en:"Aries", mean:"The Ram", th:"แกะ", ar:"الحمل", tr:"Al-Hamal", z:true, use:"กลุ่มดาวจักรราศีสำคัญที่เป็นจุดเริ่มต้นวสันตวิษุวัต (Vernal Equinox) ใช้อ้างอิงพิกัดไรต์แอสเซนชัน (Right Ascension) และการคำนวณเวลาดาราศาสตร์อิสลาม" },
+      { no:8, en:"Auriga", mean:"The Charioteer", th:"สารถี", ar:"ممسك الأعنة", tr:"Momsek Al-A'aennah", z:false, use:"มีดาวสว่างคาเพลลา ช่วยบอกเวลาในยามค่ำคืนและทิศทางซีกฟ้าเหนือ" },
+      { no:9, en:"Bootes", mean:"The Herdsman", th:"คนเลี้ยงสัตว์", ar:"العواء", tr:"Al-'Awwa'", z:false, use:"มีดาวอาร์คทูรุสสว่างเด่น ใช้กำหนดเวลาดาราในยามค่ำคืน" },
+      { no:10, en:"Caelum", mean:"The Chisel", th:"สิ่ว", ar:"آلة النقاش", tr:"Aalat An-Naqqash", z:false, use:"กลุ่มดาวซีกฟ้าใต้ ใช้ศึกษาระบบพิกัดศูนย์สูตรฟ้า" },
+      { no:11, en:"Camelopardus", mean:"The Giraffe", th:"ยีราฟ", ar:"الزرافة", tr:"Az-Zarafah", z:false, use:"อยู่ใกล้ขั้วฟ้าเหนือ ช่วยเป็นกลุ่มดาวแวดล้อมในการหาทิศเหนือจริง" },
+      { no:12, en:"Cancer", mean:"The Crab", th:"ปู", ar:"السرطان", tr:"As-Sarattan", z:true, use:"กลุ่มดาวจักรราศีบนเส้นสุริยวิถี บอกตำแหน่งดวงอาทิตย์เมื่อมีค่าดิคลิเนชันสูงสุดทางเหนือ (ครีษมายัน) ซึ่งส่งผลต่อเงาเที่ยงวันและเวลาละหมาด" },
+      { no:13, en:"Canes Venatici", mean:"The Hunting Dogs", th:"สุนัขล่าเนื้อ", ar:"السلوقيان", tr:"As-Sloqeyyan", z:false, use:"อยู่ใกล้กลุ่มดาวหมีใหญ่ ช่วยอ้างอิงทิศทางซีกฟ้าเหนือ" },
+      { no:14, en:"Canis Major", mean:"The Greater Dog", th:"สุนัขใหญ่", ar:"الكلب الأكبر", tr:"Al-Kalb Al-A'kbar", z:false, use:"มีดาวซิริอุส (Ash-Shi'ra / الشعرى) ดาวฤกษ์ที่สว่างที่สุดบนท้องฟ้าซึ่งถูกกล่าวถึงในซูเราะฮ์อัน-นัจญ์ม โองการที่ 49 ใช้บอกทิศและคำนวณเวลาค่ำคืน" },
+      { no:15, en:"Canis Minor", mean:"The Smaller Dog", th:"สุนัขเล็ก", ar:"الكلب الأصغر", tr:"Al-Kalb Al-A'sghar", z:false, use:"มีดาวโปรซิออน (Al-Ghumaisa') ใช้สังเกตบอกเวลาขึ้นของแสงอรุณรุ่ง (ซุบฮิ) ตามฤดูกาล" },
+      { no:16, en:"Capricornus", mean:"The Sea Goat", th:"แพะทะเล / มกร", ar:"الجدي", tr:"Al-Jadi", z:true, use:"กลุ่มดาวจักรราศีบนแนวสุริยวิถี บอกตำแหน่งดวงอาทิตย์ช่วงเหมายัน (ดิคลิเนชันใต้สุด) เพื่อคำนวณความยาวนานของเวลากลางวันและเวลาละหมาด" },
+      { no:17, en:"Carina", mean:"The Keel", th:"กระดูกงูเรือ", ar:"القاعدة", tr:"Al-Qa'edah", z:false, use:"มีดาวคาโนปุส (Suhail / سهيل) ซึ่งนักเดินเรือและนักดาราศาสตร์มุสลิมใช้หาทิศใต้และกำหนดทิศกิบลัตในยามค่ำคืน" },
+      { no:18, en:"Cassiopeia", mean:"The Seated Queen", th:"ค้างคาว", ar:"ذات الكرسي", tr:"That Al-Korsi", z:false, use:"ใช้ชี้ตำแหน่งดาวเหนือ (ขั้วฟ้าเหนือ) เพื่อหาทิศเหนือจริงในการตั้งต้นคำนวณมุมทิศกิบลัต" },
+      { no:19, en:"Centaurus", mean:"The Centaur", th:"ม้าครึ่งคน", ar:"قنطورس", tr:"Qanttorus", z:false, use:"มีดาวอัลฟาเซนทอรี (Rijl Qanturus) ช่วยชี้ตำแหน่งกลุ่มดาวกางเขนใต้เพื่อหาทิศใต้จริง" },
+      { no:20, en:"Cepheus", mean:"The King", th:"เซเฟอุส", ar:"الملتهب", tr:"Al-Multaheb", z:false, use:"กลุ่มดาวรอบขั้วฟ้าเหนือ ช่วยยืนยันทิศเหนือจริงในเวลากลางคืน" },
+      { no:21, en:"Cetus", mean:"The Whale", th:"เซตุส / ปลาวาฬ", ar:"قيطس", tr:"Qayttas", z:false, use:"อยู่ใกล้เส้นศูนย์สูตรฟ้า ช่วยสังเกตแนวการเคลื่อนที่ของวัตถุฟ้าตามเวลาท้องถิ่น" },
+      { no:22, en:"Chamaeleon", mean:"The Chameleon", th:"คามีเลียน", ar:"الحرباء", tr:"Al-Hirba'", z:false, use:"กลุ่มดาวซีกฟ้าใต้ ใช้ประกอบแผนที่ฟ้าซีกใต้" },
+      { no:23, en:"Circinus", mean:"The Compasses", th:"เข็มทิศ", ar:"البيكار", tr:"Al-Bikar", z:false, use:"อยู่ใกล้กลุ่มดาวม้าครึ่งคน ใช้สังเกตซีกฟ้าใต้" },
+      { no:24, en:"Columba", mean:"The Dove", th:"นกเขา", ar:"الحمامة", tr:"Al-Hamamah", z:false, use:"อยู่ทางใต้ของกลุ่มดาวนายพราน ช่วยอ้างอิงเวลาข้ามเมอริเดียนในฤดูหนาว" },
+      { no:25, en:"Coma Berenices", mean:"Berenice's Hair", th:"ผมของเบเรนิซ", ar:"الهلبة", tr:"Al-Hulbah", z:false, use:"ใช้สังเกตตำแหน่งขั้วกาแล็กซีทางช้างเผือกด้านเหนือ" },
+      { no:26, en:"Corona Australis", mean:"The Southern Crown", th:"มงกุฎใต้", ar:"الإكليل الجنوبي", tr:"Al-I'klil Al-Janobi", z:false, use:"อยู่ใกล้กลุ่มดาวคนยิงธนู ช่วยระบุแนวใจกลางทางช้างเผือก" },
+      { no:27, en:"Corona Borealis", mean:"The Northern Crown", th:"มงกุฎเหนือ", ar:"الإكليل الشمالي", tr:"Al-I'klil Ash-Shamali", z:false, use:"มีดาวอัลเฟคคา (Al-Fakkah) ใช้สังเกตบอกเวลาในยามค่ำคืน" },
+      { no:28, en:"Corvus", mean:"The Crow", th:"นกกา", ar:"الغراب", tr:"Al-Ghurab", z:false, use:"ใช้ชี้แนวไปยังดาวรวงข้าว (Spica) และบอกเวลาดาราในฤดูใบไม้ผลิ" },
+      { no:29, en:"Crater", mean:"The Cup", th:"ถ้วยแก้ว", ar:"الباطية", tr:"Al-Battiyah", z:false, use:"ใช้ประกอบการสังเกตท้องฟ้าซีกใต้คู่กับกลุ่มดาวงูไฮดรา" },
+      { no:30, en:"Crux", mean:"The Southern Cross", th:"กางเขนใต้", ar:"الصليب الجنوبي", tr:"As-Ssaleeb Al-Janobi", z:false, use:"สำคัญมากในการชี้หาทิศใต้จริง (True South) เพื่อกำหนดทิศกิบลัตและการเดินเรือในเขตร้อนและซีกโลกใต้" },
+      { no:31, en:"Cygnus", mean:"The Swan", th:"หงส์", ar:"الدجاجة", tr:"Ad-Dajajah", z:false, use:"มีดาวเดเนบ (Dhanab ad-Dajajah) อยู่ในสามเหลี่ยมฤดูร้อน ช่วยบอกทิศและเวลาค่ำคืน" },
+      { no:32, en:"Delphinus", mean:"The Dolphin", th:"ปลาโลมา", ar:"الدلفين", tr:"Ad-Dulfin", z:false, use:"ใช้สังเกตบอกเวลาท้องถิ่นช่วงกลางคืนหลังเวลาอิชาอ์" },
+      { no:33, en:"Dorado", mean:"The Swordfish", th:"ปลาปากดาบ", ar:"أبو سيف", tr:"Abu-Saif", z:false, use:"เป็นที่ตั้งของเมฆแมเจลแลนใหญ่ ใช้สังเกตซีกฟ้าใต้" },
+      { no:34, en:"Draco", mean:"The Dragon", th:"มังกร", ar:"التنين", tr:"At-Tinneen", z:false, use:"มีดาวทูบัน (Ath-Thu'ban) อดีตดาวเหนือ ใช้ล้อมรอบขั้วฟ้าเหนือเพื่อหาทิศเหนือจริง" },
+      { no:35, en:"Equuleus", mean:"The Little Horse", th:"ม้าเล็ก", ar:"قطعة الفرس", tr:"Qett'at Al-Faras", z:false, use:"อยู่ใกล้เส้นศูนย์สูตรฟ้า ใช้สังเกตคู่กับกลุ่มดาวม้าปีก" },
+      { no:36, en:"Eridanus", mean:"The River", th:"แม่น้ำ", ar:"النهر", tr:"An-Nahr", z:false, use:"มีดาวอะเคอร์นาร์ (Akhir an-Nahr) สว่างเด่นทางซีกฟ้าใต้ ใช้บอกทิศใต้และเวลาดารา" },
+      { no:37, en:"Fornax", mean:"The Furnace", th:"เตาอบ", ar:"الكور", tr:"Al-Koor", z:false, use:"ใช้ศึกษาดาราศาสตร์ซีกฟ้าใต้" },
+      { no:38, en:"Gemini", mean:"The Twins", th:"คนคู่ / โลงศพ", ar:"التوأمان", tr:"At-Tawa'man", z:true, use:"กลุ่มดาวจักรราศีบนเส้นสุริยวิถี ใช้คำนวณตำแหน่งดวงอาทิตย์ ดวงจันทร์ และสถานีของดวงจันทร์ (มะนาซิลุลกอมัร)" },
+      { no:39, en:"Grus", mean:"The Crane", th:"นกกระเรียน / นกยาง", ar:"الكركي", tr:"Al-Kurki", z:false, use:"มีดาวอัลแนร์ (An-Nayyir) ใช้ในการเดินเรือและวัดมุมสูงดาราศาสตร์" },
+      { no:40, en:"Hercules", mean:"The Hercules", th:"เฮอร์คิวลิส", ar:"الجاثي", tr:"Al-Jathi", z:false, use:"ใช้บอกเวลาท้องถิ่นเมื่อผ่านเส้นเมอริเดียนฟ้าในฤดูร้อน" },
+      { no:41, en:"Horologium", mean:"The Clock", th:"นาฬิกา", ar:"الساعة", tr:"As-Sa'ah", z:false, use:"กลุ่มดาวซีกฟ้าใต้ ใช้ประกอบแผนที่ทรงกลมท้องฟ้า" },
+      { no:42, en:"Hydra", mean:"The Water Serpent", th:"งูไฮดรา", ar:"الشجاع", tr:"Ash-Shuja'a", z:false, use:"กลุ่มดาวที่ยาวที่สุดบนท้องฟ้า มีดาวอัลฟาร์ด (Al-Fard) ใช้บอกเวลาข้ามเมอริเดียน" },
+      { no:43, en:"Hydrus", mean:"The Water Snake", th:"งูไฮดรุส", ar:"حية الماء", tr:"Hayyat Al-Ma'", z:false, use:"อยู่ใกล้ขั้วฟ้าใต้ ช่วยกำหนดทิศใต้ในซีกโลกใต้" },
+      { no:44, en:"Indus", mean:"The Indian", th:"คนอินเดีย", ar:"الهندي", tr:"Al-Hindi", z:false, use:"กลุ่มดาวซีกฟ้าใต้ ใช้ประกอบการอ้างอิงพิกัดฟ้า" },
+      { no:45, en:"Lacerta", mean:"The Lizard", th:"กิ้งก่า", ar:"العظاءة", tr:"Al-'Adha'ah", z:false, use:"อยู่ระหว่างกลุ่มดาวหงส์และค้างคาวในซีกฟ้าเหนือ" },
+      { no:46, en:"Leo", mean:"The Lion", th:"สิงโต", ar:"الأسد", tr:"Al-A'sad", z:true, use:"กลุ่มดาวจักรราศีสำคัญบนแนวสุริยวิถี ใช้กำหนดตำแหน่งสถานีของดวงจันทร์ (มะนาซิล) และการคำนวณปฏิทินจันทรคติ" },
+      { no:47, en:"Leo Minor", mean:"The Lesser Lion", th:"สิงโตเล็ก", ar:"الأسد الأصغر", tr:"Al-A'sad Al-A'sghar", z:false, use:"อยู่เหนือกลุ่มดาวสิงโต ใช้สังเกตซีกฟ้าเหนือ" },
+      { no:48, en:"Lepus", mean:"The Hare", th:"กระต่ายป่า", ar:"الأرنب", tr:"Al-A'rnab", z:false, use:"อยู่ใต้เท้ากลุ่มดาวนายพราน มีดาวอาร์เนบ (Al-Arnab) ใช้สังเกตเวลาค่ำคืน" },
+      { no:49, en:"Libra", mean:"The Scales", th:"คันชั่ง", ar:"الميزان", tr:"Al-Mizan", z:true, use:"กลุ่มดาวจักรราศีใกล้จุดศารทวิษุวัต (Autumnal Equinox) ที่ดวงอาทิตย์อยู่บนเส้นศูนย์สูตรฟ้าและกลางวันเท่ากับกลางคืน" },
+      { no:50, en:"Lupus", mean:"The Wolf", th:"สุนัขป่า", ar:"السبع", tr:"As-Sab'a", z:false, use:"อยู่ใกล้กลุ่มดาวแมงป่องและม้าครึ่งคนทางซีกฟ้าใต้" },
+      { no:51, en:"Lynx", mean:"The Lynx", th:"แมวป่า", ar:"الوشق", tr:"Al-Washaq", z:false, use:"กลุ่มดาวซีกฟ้าเหนือระหว่างหมีใหญ่และสารถี" },
+      { no:52, en:"Lyra", mean:"The Lyre", th:"พิณ", ar:"القيثارة", tr:"Al-Qitharah", z:false, use:"มีดาวเวกา (Al-Waqi' / النسر الواقع) ดาวหลักที่ใช้วัดมุมสูงบนแอสโทรเลบ (Astrolabe) ของนักดาราศาสตร์มุสลิมเพื่อหาเวลาละหมาดกลางคืน" },
+      { no:53, en:"Mensa", mean:"The Table Mountain", th:"ภูเขา", ar:"الجبل", tr:"Al-Jabal", z:false, use:"กลุ่มดาวใกล้ขั้วฟ้าใต้" },
+      { no:54, en:"Microscopium", mean:"The Microscope", th:"กล้องจุลทรรศน์", ar:"المجهر", tr:"Al-Mijhar", z:false, use:"อยู่ทางใต้ของกลุ่มดาวแพะทะเล" },
+      { no:55, en:"Monoceros", mean:"The Unicorn", th:"ยูนิคอร์น", ar:"وحيد القرن", tr:"Waheed Al-Qarn", z:false, use:"วางตัวอยู่บนเส้นศูนย์สูตรฟ้าข้างกลุ่มดาวนายพราน" },
+      { no:56, en:"Musca", mean:"The Fly", th:"แมลงวัน", ar:"الذبابة", tr:"Ath-Thubabah", z:false, use:"อยู่ติดกับกลุ่มดาวกางเขนใต้ ช่วยชี้ทิศใต้" },
+      { no:57, en:"Norma", mean:"The Carpenter's Square", th:"เครื่องวัดระดับ", ar:"مربع النجار", tr:"Morabba'a An-Najjar", z:false, use:"อยู่ในแนวทางช้างเผือกซีกฟ้าใต้" },
+      { no:58, en:"Octans", mean:"The Octant", th:"แปดเหลี่ยม", ar:"الثمن", tr:"Ath-Thomon", z:false, use:"เป็นที่ตั้งของจุดขั้วฟ้าใต้ (South Celestial Pole) ใช้หาทิศใต้จริง" },
+      { no:59, en:"Ophiuchus", mean:"The Serpent Holder", th:"คนแบกงู", ar:"الحواء", tr:"Al-Hawwa'", z:false, use:"เส้นสุริยวิถีพาดผ่านส่วนล่าง ใช้ติดตามตำแหน่งดวงอาทิตย์และดวงจันทร์ช่วงปลายปี" },
+      { no:60, en:"Orion", mean:"The Great Hunter", th:"นายพราน / เต่า", ar:"الجبار", tr:"Al-Jabbar", z:false, use:"สำคัญมากในการหาทิศตะวันออกและตะวันตกจริง เพราะดาวเข็มขัดนายพราน (Al-Mintaqah, An-Nitaq, An-Nidham) อยู่บนเส้นศูนย์สูตรฟ้าพอดี ช่วยหาทิศกิบลัตได้แม่นยำ" },
+      { no:61, en:"Pavo", mean:"The Peacock", th:"นกยูง", ar:"الطاووس", tr:"Att-Ttawoos", z:false, use:"ใช้เป็นดาวนำทางซีกฟ้าใต้" },
+      { no:62, en:"Pegasus", mean:"The Winged Horse", th:"ม้าปีก", ar:"الفرس الأعظم", tr:"Al-Faras Al-A'adham", z:false, use:"มีสี่เหลี่ยมม้าปีก (Al-Markab, Scheat, Algenib) ช่วยบอกเวลาดาราและชี้ทิศเหนือ-ใต้" },
+      { no:63, en:"Perseus", mean:"The Hero", th:"เพอร์เซอุส", ar:"حامل رأس الغول", tr:"Hamil Ra's Al-Ghul", z:false, use:"มีดาวแปรแสงอัลกอล (Al-Ghul) และดาวเมอร์ฟัค (Al-Mirfaq) ที่บรรจุอยู่ในแผ่นแอสโทรเลบอิสลาม" },
+      { no:64, en:"Phoenix", mean:"The Phoenix", th:"นกฟีนิกซ์", ar:"العنقاء", tr:"Al-'Anqa'", z:false, use:"มีดาวอังกา (Al-Anka') ใช้สังเกตบอกเวลาซีกฟ้าใต้" },
+      { no:65, en:"Pictor", mean:"The Painter's Easel", th:"ขาตั้งภาพ", ar:"آلة الرسام", tr:"Aalat Ar-Rassam", z:false, use:"อยู่ใกล้ดาวคาโนปุสทางซีกฟ้าใต้" },
+      { no:66, en:"Pisces", mean:"The Fishes", th:"ปลาคู่", ar:"الحوت", tr:"Al-Hut", z:true, use:"กลุ่มดาวจักรราศีที่เป็นตำแหน่งจุดวสันตวิษุวัตในปัจจุบัน ใช้ตั้งต้นคำนวณพิกัดศูนย์สูตรฟ้าและปฏิทินดาราศาสตร์" },
+      { no:67, en:"Piscis Austrinus", mean:"The Southern Fish", th:"ปลาทางใต้", ar:"الحوت الجنوبي", tr:"Al-Hut Al-Janubi", z:false, use:"มีดาวโฟมาลออต (Fam al-Hut) ใช้ในการเดินเรือและบอกเวลาค่ำคืน" },
+      { no:68, en:"Puppis", mean:"The Stern", th:"ท้ายเรือ", ar:"الكوثل", tr:"Al-Kawthal", z:false, use:"อยู่ในแนวทางช้างเผือกซีกใต้" },
+      { no:69, en:"Pyxis", mean:"The Compass Box", th:"เข็มทิศเดินเรือ", ar:"بيت الإبرة", tr:"Bayt Al-Ebrah", z:false, use:"ใช้สังเกตอ้างอิงกลุ่มดาวเรือโบราณซีกใต้" },
+      { no:70, en:"Reticulum", mean:"The Net", th:"ตาข่าย", ar:"الشبكة", tr:"Ash-Shabakah", z:false, use:"กลุ่มดาวซีกฟ้าใต้ใกล้เมฆแมเจลแลนใหญ่" },
+      { no:71, en:"Sagitta", mean:"The Arrow", th:"ลูกธนู", ar:"السهم", tr:"As-Sahm", z:false, use:"อยู่ใกล้กลุ่มดาวนกอินทรีในทางช้างเผือก" },
+      { no:72, en:"Sagittarius", mean:"The Archer", th:"คนยิงธนู", ar:"الرامي", tr:"Ar-Rami", z:true, use:"กลุ่มดาวจักรราศีบนแนวสุริยวิถีและเป็นทิศทางใจกลางกาแล็กซีทางช้างเผือก ใช้ติดตามวงโคจรดวงจันทร์และดวงอาทิตย์" },
+      { no:73, en:"Scorpius", mean:"The Scorpion", th:"แมงป่อง", ar:"العقرب", tr:"Al-Aqrab", z:true, use:"กลุ่มดาวจักรราศีสำคัญ มีดาวแอนทาเรส (Qalb al-Aqrab) และดาวเชาลา (Ash-Shaulah) ใช้กำหนดสถานีของดวงจันทร์ (มะนาซิลุลกอมัร) และบอกเวลาฟัจญ์ร (ซุบฮิ)" },
+      { no:74, en:"Sculptor", mean:"The Sculptor's Workshop", th:"ช่างแกะสลัก", ar:"معمل النحات", tr:"M'amal An-Nahhat", z:false, use:"เป็นที่ตั้งของขั้วกาแล็กซีทางช้างเผือกด้านใต้" },
+      { no:75, en:"Scutum", mean:"The Shield", th:"โล่", ar:"الترس", tr:"At-Tirs", z:false, use:"อยู่ในแถบสว่างของทางช้างเผือก" },
+      { no:76, en:"Serpens", mean:"The Serpent", th:"งู", ar:"الحية", tr:"Al-Hayyah", z:false, use:"วางตัวใกล้เส้นศูนย์สูตรฟ้า มีดาวอูนุกอัลฮัย (Unukalhai) ใช้บอกเวลาดารา" },
+      { no:77, en:"Sextans", mean:"The Sextant", th:"เครื่องวัดมุม", ar:"السدس", tr:"As-Sodos", z:false, use:"วางตัวอยู่บนเส้นศูนย์สูตรฟ้าตั้งชื่อตามเครื่องมือวัดมุมดาราศาสตร์" },
+      { no:78, en:"Taurus", mean:"The Bull", th:"วัว / ธง", ar:"الثور", tr:"Ath-Thawr", z:true, use:"กลุ่มดาวจักรราศีที่มีดาวอัลดิบารัน (Ad-Dabaran) และกระจุกดาวลูกไก่ (Ath-Thurayya) ซึ่งชาวอาหรับและนักฟะลักใช้บอกฤดูกาลและเวลาอรุณรุ่ง" },
+      { no:79, en:"Telescopium", mean:"The Telescope", th:"กล้องโทรทรรศน์", ar:"المرقب", tr:"Al-Merqab", z:false, use:"อยู่ทางใต้ของกลุ่มดาวคนยิงธนู" },
+      { no:80, en:"Triangulum", mean:"The Triangle", th:"สามเหลี่ยม", ar:"المثلث", tr:"Al-Muthallath", z:false, use:"มีดาวมุซัลลัซ (Mothallah) ใช้สังเกตซีกฟ้าเหนือใกล้แอนโดรเมดา" },
+      { no:81, en:"Triangulum Australe", mean:"The Southern Triangle", th:"สามเหลี่ยมทางใต้", ar:"المثلث الجنوبي", tr:"Al-Muthallath Al-Janobi", z:false, use:"ช่วยอ้างอิงทิศใต้ในซีกโลกใต้" },
+      { no:82, en:"Tucana", mean:"The Toucan", th:"นกทูแคน", ar:"الطوقان", tr:"Att-Ttuqan", z:false, use:"เป็นที่ตั้งของเมฆแมเจลแลนเล็กทางซีกฟ้าใต้" },
+      { no:83, en:"Ursa Major", mean:"The Greater Bear", th:"หมีใหญ่ / จระเข้", ar:"الدب الأكبر", tr:"Ad-Dubb Al-A'kbar", z:false, use:"มีดาวดูเบ (Ad-Dubb) และดาวเมรัก (Al-Maraqq) ที่ชี้ตรงไปยังดาวเหนือ ช่วยหาทิศเหนือจริงและกำหนดทิศกิบลัตในยามค่ำคืน" },
+      { no:84, en:"Ursa Minor", mean:"The Smaller Bear", th:"หมีเล็ก", ar:"الدب الأصغر", tr:"Ad-Dubb Al-A'sghar", z:false, use:"เป็นที่ตั้งของดาวเหนือ (Polaris / Al-Judayy) ซึ่งชี้ทิศเหนือจริง (ขั้วฟ้าเหนือ P) และมุมเงยของดาวเหนือจะเท่ากับละติจูด (φ) ของผู้สังเกตเสมอ ใช้หาทิศกิบลัตโดยตรง" },
+      { no:85, en:"Vela", mean:"The Sail", th:"ใบเรือ", ar:"الشراع", tr:"Ash-Shera'a", z:false, use:"มีดาวอัลสุเฮล (Alsuhail) ใช้ในการเดินเรือและบอกทิศทางซีกใต้" },
+      { no:86, en:"Virgo", mean:"The Maiden", th:"หญิงสาว", ar:"العذراء", tr:"Al-'Athra'", z:true, use:"กลุ่มดาวจักรราศีขนาดใหญ่บนเส้นสุริยวิถี มีดาวรวงข้าว (As-Simak al-A'zal / Spica) ใช้คำนวณตำแหน่งดวงจันทร์และปฏิทินกอมารียะฮ์" },
+      { no:87, en:"Volans", mean:"The Flying Fish", th:"ปลาบิน", ar:"السمكة الطائرة", tr:"As-Samakah Att-Tta'erah", z:false, use:"อยู่ทางซีกฟ้าใต้ใกล้ดาวคาโนปุส" },
+      { no:88, en:"Vulpecula", mean:"The Fox", th:"สุนัขจิ้งจอกเล็ก", ar:"الثعلب", tr:"Ath-Th'alab", z:false, use:"อยู่ในบริเวณสามเหลี่ยมฤดูร้อน ช่วยอ้างอิงเวลาดาราในยามค่ำคืน" }
+    ];
+
+    const ARABIC_STARS_SAMPLE = [
+      { common:"Aldebaran", ar:"Ad-Dabaran (الدبران)", mean:"ผู้ตามกระจุกดาวลูกไก่", star:"Alpha Tau (กลุ่มดาววัว)" },
+      { common:"Altair", ar:"At-Ta'ir (الطائر)", mean:"นกอินทรีผู้โบยบิน", star:"Alpha Aql (กลุ่มดาวนกอินทรี)" },
+      { common:"Betelgeuse", ar:"Yad al-Jauza' (يد الجوزاء)", mean:"มือของนายพราน", star:"Alpha Ori (กลุ่มดาวนายพราน)" },
+      { common:"Rigel", ar:"Ar-Rijl (الرجل)", mean:"เท้าของนายพราน", star:"Beta Ori (กลุ่มดาวนายพราน)" },
+      { common:"Mintaka / Alnilam / Alnitak", ar:"Al-Mintaqah / An-Nidham / An-Nitaq", mean:"เข็มขัดและสายสร้อยไข่มุกนายพราน (อยู่บนเส้นศูนย์สูตรฟ้า)", star:"Delta, Epsilon, Zeta Ori" },
+      { common:"Vega", ar:"Al-Waqi' (النسر الواقع)", mean:"นกอินทรีที่กำลังโฉบลง", star:"Alpha Lyr (กลุ่มดาวพิณ)" },
+      { common:"Deneb", ar:"Dhanab ad-Dajajah (ذنب الدجاجة)", mean:"หางของแม่ไก่/หงส์", star:"Alpha Cyg (กลุ่มดาวหงส์)" },
+      { common:"Fomalhaut", ar:"Fam al-Hut (فم الحوت)", mean:"ปากของปลาทางใต้", star:"Alpha PsA (กลุ่มดาวปลาทางใต้)" },
+      { common:"Dubhe & Merak", ar:"Ad-Dubb & Al-Maraqq", mean:"ดาวชี้ขั้วฟ้าเหนือในกลุ่มดาวหมีใหญ่", star:"Alpha & Beta UMa" },
+      { common:"Algol", ar:"Ra's al-Ghul (رأس الغول)", mean:"ศีรษะของอสูร (ดาวแปรแสง)", star:"Beta Per (กลุ่มดาวเพอร์เซอุส)" },
+      { common:"Achernar", ar:"Akhir an-Nahr (آخر النهر)", mean:"ปลายสุดของแม่น้ำ", star:"Alpha Eri (กลุ่มดาวแม่น้ำ)" },
+      { common:"Shaula", ar:"Ash-Shaulah (الشولة)", mean:"ปลายหางที่ชูขึ้นของแมงป่อง", star:"Lambda Sco (กลุ่มดาวแมงป่อง)" }
+    ];
+
+    /* ====================================================================
+       5. ASTRONOMICAL CALCULATION ENGINE
+       ==================================================================== */
+    const DEG = Math.PI / 180;
+    const RAD = 180 / Math.PI;
+
+    function toDMS(degVal) {
+      const sign = degVal < 0 ? "-" : "";
+      const abs = Math.abs(degVal);
+      const d = Math.floor(abs);
+      const mFloat = (abs - d) * 60;
+      const m = Math.floor(mFloat);
+      const s = ((mFloat - m) * 60).toFixed(1);
+      return `${sign}${d}° ${m}' ${s}"`;
+    }
+
+    function formatTimeHM(hoursFloat) {
+      let h = ((hoursFloat % 24) + 24) % 24;
+      let hr = Math.floor(h);
+      let min = Math.round((h - hr) * 60);
+      if (min === 60) { hr = (hr + 1) % 24; min = 0; }
+      return `${String(hr).padStart(2, '0')}:${String(min).padStart(2, '0')} น.`;
+    }
+
+    function computeQiblaData(lat, lon) {
+      const makkahLat = 21.4225;
+      const makkahLon = 39.8262;
+      const dLon = lon - makkahLon;
+      const b = 90 - lat;
+      const c = 90 - makkahLat;
+
+      const cosA_side = Math.cos(b * DEG) * Math.cos(c * DEG) +
+                        Math.sin(b * DEG) * Math.sin(c * DEG) * Math.cos(dLon * DEG);
+      const a_deg = Math.acos(Math.max(-1, Math.min(1, cosA_side))) * RAD;
+
+      const y = Math.sin((makkahLon - lon) * DEG);
+      const x = Math.cos(lat * DEG) * Math.tan(makkahLat * DEG) -
+                Math.sin(lat * DEG) * Math.cos((makkahLon - lon) * DEG);
+      let azimuth = Math.atan2(y, x) * RAD;
+      azimuth = (azimuth + 360) % 360;
+      const westFromNorth = 360 - azimuth;
+
+      const arcMin = a_deg * 60;
+      const distKm = arcMin * 1.85;
+
+      const ratioSq = Math.pow(6356725 / 6378137, 2);
+      const geocentricLat = Math.atan(ratioSq * Math.tan(lat * DEG)) * RAD;
+
+      return {
+        makkahLat, makkahLon, dLon, b, c, a_deg,
+        azimuth, westFromNorth, arcMin, distKm, geocentricLat
+      };
+    }
+
+    function computePrayerTimes(lat, lon, dateStr) {
+      const dt = dateStr ? new Date(dateStr) : new Date();
+      const start = new Date(dt.getFullYear(), 0, 0);
+      const dayOfYear = Math.floor((dt - start) / 86400000);
+
+      const B = (360 / 365) * (dayOfYear - 81) * DEG;
+      const eqTimeMin = 9.87 * Math.sin(2 * B) - 7.53 * Math.cos(B) - 1.5 * Math.sin(B);
+      const decl = 23.45 * Math.sin((360 / 365) * (dayOfYear + 284) * DEG);
+
+      const lonDiffMin = (105 - lon) * 4;
+      const transit = 12 + (lonDiffMin - eqTimeMin) / 60;
+
+      function hourAngleForAlt(altDeg) {
+        const num = Math.sin(altDeg * DEG) - Math.sin(lat * DEG) * Math.sin(decl * DEG);
+        const den = Math.cos(lat * DEG) * Math.cos(decl * DEG);
+        const cosH = Math.max(-1, Math.min(1, num / den));
+        return (Math.acos(cosH) * RAD) / 15;
+      }
+
+      const haSunrise = hourAngleForAlt(-0.833);
+      const haFajr = hourAngleForAlt(-18.0);
+      const haIsha = hourAngleForAlt(-17.0);
+
+      const zenithDistNoon = Math.abs(lat - decl);
+      const asrAlt = Math.atan(1 / (1 + Math.tan(zenithDistNoon * DEG))) * RAD;
+      const haAsr = hourAngleForAlt(asrAlt);
+
+      return {
+        dayOfYear,
+        decl,
+        eqTimeMin,
+        lonDiffMin,
+        fajr: transit - haFajr,
+        sunrise: transit - haSunrise,
+        dhuhr: transit + (2 / 60),
+        asr: transit + haAsr,
+        maghrib: transit + haSunrise + (2 / 60),
+        isha: transit + haIsha
+      };
+    }
+
+    const HIJRI_MONTHS = [
+      "มุฮัรรอม (Muharram)",
+      "ซอฟัร (Safar)",
+      "ร่อบีอุลเอาวัล (Rabi' al-Awwal)",
+      "ร่อบีอุลอาคิร (Rabi' al-Thani)",
+      "ญุมาดัลอูลา (Jumada al-Ula)",
+      "ญุมาดัลอาคิเราะฮ์ (Jumada al-Akhirah)",
+      "ร่อญับ (Rajab)",
+      "ชะอ์บาน (Sha'ban)",
+      "รอมฎอน (Ramadan)",
+      "เชาวาล (Shawwal)",
+      "ซุลกออิดะฮ์ (Dhu al-Qi'dah)",
+      "ซุลฮิจญะฮ์ (Dhu al-Hijjah)"
+    ];
+
+    const GREG_WEEKDAYS = ["วันอาทิตย์", "วันจันทร์", "วันอังคาร", "วันพุธ", "วันพฤหัสบดี", "วันศุกร์", "วันเสาร์"];
+
+    function gregorianToHijri(y, m, d) {
+      let jd;
+      if ((y > 1582) || ((y === 1582) && (m > 10)) || ((y === 1582) && (m === 10) && (d > 14))) {
+        jd = Math.floor((1461 * (y + 4800 + Math.floor((m - 14) / 12))) / 4) +
+             Math.floor((367 * (m - 2 - 12 * Math.floor((m - 14) / 12))) / 12) -
+             Math.floor((3 * Math.floor((y + 4900 + Math.floor((m - 14) / 12)) / 100)) / 4) +
+             d - 32075;
+      } else {
+        jd = 367 * y - Math.floor((7 * (y + 5001 + Math.floor((m - 9) / 7))) / 4) +
+             Math.floor((275 * m) / 9) + d + 1729777;
+      }
+      let l = jd - 1948440 + 10632;
+      let n = Math.floor((l - 1) / 10631);
+      l = l - 10631 * n + 354;
+      let j = (Math.floor((10985 - l) / 5316)) * (Math.floor((50 * l) / 17719)) +
+              (Math.floor(l / 5670)) * (Math.floor((43 * l) / 15238));
+      l = l - (Math.floor((30 - j) / 15)) * (Math.floor((17719 * j) / 50)) -
+          (Math.floor(j / 16)) * (Math.floor((15238 * j) / 43)) + 29;
+      let hm = Math.floor((24 * l) / 709);
+      let hd = l - Math.floor((709 * hm) / 24);
+      let hy = 30 * n + j - 30;
+      const dtObj = new Date(y, m - 1, d);
+      return {
+        hd, hm, hy,
+        monthName: HIJRI_MONTHS[hm - 1] || "",
+        weekday: GREG_WEEKDAYS[dtObj.getDay()],
+        jd
+      };
+    }
+
+    /* ====================================================================
+       6. MODAL CONTENT RENDERERS (ALL 9 MODULES)
+       ==================================================================== */
+    function openModal(sectionKey) {
+      closeStartHub();
+      if (activeSimAnim) {
+        cancelAnimationFrame(activeSimAnim);
+        activeSimAnim = null;
+      }
+
+      const overlay = document.getElementById('mainModalOverlay');
+      const badge = document.getElementById('modalBadge');
+      const title = document.getElementById('modalTitle');
+      const body = document.getElementById('modalBodyContent');
+
+      if (sectionKey === 'cosmology') {
+        badge.textContent = "COSMOLOGY & AL-QURAN";
+        title.textContent = "การกำเนิดและสิ้นสุดของจักรวาล (Interactive 3D Simulation)";
+        renderCosmologyModal(body);
+      } else if (sectionKey === 'quran') {
+        badge.textContent = "السماء في القرآن الكريم";
+        title.textContent = "السماء في القرآن — ดาราศาสตร์และฟากฟ้าในคัมภีร์อัลกุรอาน";
+        renderQuranModal(body);
+      } else if (sectionKey === 'history') {
+        badge.textContent = "ISLAMIC ASTRONOMY HISTORY";
+        title.textContent = "ประวัติศาสตร์ดาราศาสตร์อิสลาม & 8 นักปราชญ์มุสลิมยุคทอง";
+        renderHistoryModal(body);
+      } else if (sectionKey === 'stars88') {
+        badge.textContent = "88 CONSTELLATIONS & ARABIC STARS";
+        title.textContent = "ชื่อดวงดาวภาษาอาหรับ ครบทั้ง 88 กลุ่มดาว และประโยชน์ในการทำศาสนกิจ";
+        renderStars88Modal(body);
+      } else if (sectionKey === 'sphere') {
+        badge.textContent = "SPHERICAL ASTRONOMY";
+        title.textContent = "ทรงกลมท้องฟ้า ระบบพิกัด และสามเหลี่ยมทรงกลม";
+        renderSphereModal(body);
+      } else if (sectionKey === 'hilal') {
+        badge.textContent = "CRESCENT VISIBILITY (HILAL)";
+        title.textContent = "การคาดการณ์เห็นจันทร์เสี้ยวแรก (อิสติฮ์ลาล)";
+        renderHilalModal(body);
+      } else if (sectionKey === 'qibla') {
+        badge.textContent = "QIBLA DIRECTION";
+        title.textContent = "คำนวณทิศกิบลัตและระยะทางโค้งวงกลมใหญ่ (77 จังหวัด)";
+        renderQiblaModal(body);
+      } else if (sectionKey === 'prayer') {
+        badge.textContent = "PRAYER TIMES CALCULATOR";
+        title.textContent = "คำนวณเวลาละหมาด 5 เวลาตามพิกัดจังหวัดทั่วประเทศไทย";
+        renderPrayerModal(body);
+      } else if (sectionKey === 'hijri') {
+        badge.textContent = "HIJRI CALENDAR & BIRTHDATE";
+        title.textContent = "ปฏิทินฮิจเราะห์ศักราช & เทียบวันเดือนปีเกิดย้อนหลัง";
+        renderHijriModal(body);
+      } else if (sectionKey === 'apologetics') {
+        badge.textContent = "COSMOLOGY vs MATERIALISM";
+        title.textContent = "การวิเคราะห์และตอบโต้แนวคิดวัตถุนิยม (เอทิสต์) ด้วยดาราศาสตร์และอัลกุรอาน";
+        renderApologeticsModal(body);
+      } else if (sectionKey === 'contact') {
+        badge.textContent = "COMMUNITY COMMENTS";
+        title.textContent = "กระดานแสดงความคิดเห็นและแลกเปลี่ยนเรียนรู้ดาราศาสตร์อิสลาม";
+        renderContactModal(body);
+      }
+
+      overlay.classList.add('is-open');
+    }
+
+    const COSMO_STAGES = [
+      {
+        name: "1. อัร-ร็อตก็อ (Ar-Ratq / Singularity)",
+        temp: "> 10¹² K",
+        time: "t = 0 วินาที",
+        desc: "จุดเริ่มต้นของจักรวาลที่สสาร พลังงาน กาลเวลา และสถานที่ทั้งหมดหลอมรวมติดเป็นเนื้อเดียวกัน (Singularity) มีพลังงานและความหนาแน่นเป็นอนันต์",
+        ar: "أَوَلَمْ يَرَ الَّذِينَ كَفَرُوا أَنَّ السَّمَاوَاتِ وَالْأَرْضَ كَانَتَا رَتْقًا فَفَتَقْنَاهُمَا ۖ وَجَعَلْنَا مِنَ الْمَاءِ كُلَّ شَيْءٍ حَيٍّ ۖ أَفَلَا يُؤْمِنُونَ",
+        th: "“และบรรดาผู้ปฏิเสธศรัทธาไม่เห็นดอกหรือว่า แท้จริงชั้นฟ้าทั้งหลายและแผ่นดินนั้นแต่ก่อนนี้รวมติดเป็นอันเดียวกัน (ร็อตก็อ) แล้วเราได้แยกมันทั้งสองออกจากกัน (ฟัตก็อ) และเราได้ทำให้ทุกสิ่งมีชีวิตมาจากน้ำ ดังนั้นพวกเขาจะยังไม่ศรัทธาอีกหรือ” (ซูเราะฮ์อัล-อัมบิยาอ์ 21:30)"
+      },
+      {
+        name: "2. อัล-ฟัตก็อ (Al-Fatq / Big Bang)",
+        temp: "10¹² K → 10⁹ K",
+        time: "10⁻⁶ วินาที ถึง 3 นาที",
+        desc: "การระเบิดและแยกออกครั้งใหญ่ พลาสมาของควาร์ก-กลูออนเย็นตัวลงกลายเป็นโปรตอนและนิวตรอน และสร้างนิวเคลียสของดิวเทอเรียม ฮีเลียม และลิเทียมภายใน 3 นาทีแรก",
+        ar: "أَوَلَمْ يَرَ الَّذِينَ كَفَرُوا أَنَّ السَّمَاوَاتِ وَالْأَرْضَ كَانَتَا رَتْقًا فَفَتَقْنَاهُمَا",
+        th: "“แท้จริงชั้นฟ้าทั้งหลายและแผ่นดินนั้นเคยรวมติดเป็นเนื้อเดียวกัน แล้วเราได้แยกมันทั้งสองออกจากกัน” (ซูเราะฮ์อัล-อัมบิยาอ์ 21:30)"
+      },
+      {
+        name: "3. อัด-ดุคอน (Ad-Dukhan / หมอกควันเพลิงจักรวาล)",
+        temp: "4,000 K → 300 K",
+        time: "400,000 ปี หลังบิกแบง",
+        desc: "จักรวาลเต็มไปด้วยกลุ่มหมอกควันก๊าซไฮโดรเจนและฮีเลียมที่ร้อนและทึบแสงพร้อมฝุ่นละออง (Dukhan) ก่อนที่แรงโน้มถ่วงจะดึงดูดให้ยุบตัวเกิดเป็นเนบิวลา ดาวฤกษ์ และกาแล็กซีแรกเริ่ม",
+        ar: "ثُمَّ اسْتَوَىٰ إِلَى السَّمَاءِ وَهِيَ دُخَانٌ فَقَالَ لَهَا وَلِلْأَرْضِ ائْتِيَا طَوْعًا أَوْ كَرْهًا قَالَتَا أَتَيْنَا طَائِعِينَ",
+        th: "“หลังจากนั้นพระองค์ทรงมุ่งสู่ฟากฟ้า ในขณะที่มันเป็นหมอกเพลิง (ดุคอน) อยู่ และตรัสแก่มันและแก่แผ่นดินว่า เจ้าทั้งสองจงมาเถิดจะโดยสมัครใจหรือฝืนใจก็ตาม มันทั้งสองกล่าวว่า เราทั้งสองมาโดยสมัครใจแล้ว” (ซูเราะฮ์ฟุศศิลัต 41:11)"
+      },
+      {
+        name: "4. อัล-มูซิอูน (Al-Musi'un / การขยายตัวของจักรวาล)",
+        temp: "2.73 K (~ 3 K)",
+        time: "1.38 – 1.5 หมื่นล้านปี (ปัจจุบัน)",
+        desc: "กาแล็กซีมากกว่า 2 แสนล้านกาแล็กซีกำลังเคลื่อนที่ถอยห่างออกจากกันด้วยความเร็วสูง พิสูจน์ได้จากการเลื่อนไปทางสีแดงของสเปกตรัมแสง (Redshift) และรังสีไมโครเวฟพื้นหลังจักรวาลที่อุณหภูมิ 3 เคลวิน",
+        ar: "وَالسَّمَاءَ بَنَيْنَاهَا بِأَيْدٍ وَإِنَّا لَمُوسِعُونَ",
+        th: "“และท้องฟ้านั้นเราได้สร้างมันด้วยพลัง และแท้จริงเราคือผู้ขยายให้กว้างขวางอย่างแน่นอน” (ซูเราะฮ์อัซ-ซาริยาต 51:47)"
+      },
+      {
+        name: "5. ฏ็อยยิส-ซิญิล (Tayy as-Sijill / การพับม้วนท้องฟ้า & Big Crunch)",
+        temp: "พุ่งสูงขึ้นสู่อนันต์",
+        time: "วาระสุดท้ายของเอกภพ",
+        desc: "เมื่อการขยายตัวสิ้นสุดลง แรงโน้มถ่วงจะดึงดูดให้จักรวาลพับม้วนและยุบตัวกลับเข้าหาจุดศูนย์กลางอย่างรุนแรง (Big Crunch) กลับสู่สภาพมวลตั้งต้นอีกครั้ง",
+        ar: "يَوْمَ نَطْوِي السَّمَاءَ كَطَيِّ السِّجِلِّ لِلْكُتُبِ ۚ كَمَا بَدَأْنَا أَوَّلَ خَلْقٍ نُّعِيدُهُ ۚ وَعْدًا عَلَيْنَا ۚ إِنَّا كُنَّا فَاعِلِينَ",
+        th: "“วันที่เราจะม้วนท้องฟ้าเสมือนการม้วนแผ่นกระดาษสำหรับบันทึก ดังที่เราได้เริ่มแรกการสร้าง เราจะให้มันกลับคืนมาอีก มันเป็นสัญญาที่เป็นภาระผูกพันกับเรา แท้จริงเราเป็นผู้กระทำอย่างแน่นอน” (ซูเราะฮ์อัล-อัมบิยาอ์ 21:104)"
+      },
+      {
+        name: "6. อัล-อิอาดะฮ์ (Al-I'adah / การสร้างแผ่นดินและชั้นฟ้าใหม่)",
+        temp: "มิติแห่งโลกอาคิเราะฮ์",
+        time: "หลังการฟื้นคืนชีพ",
+        desc: "ภายหลังการพับม้วนและยุบตัว กระบวนการระเบิดและการเปลี่ยนแผ่นดินและชั้นฟ้าใหม่ที่ไม่ใช่แผ่นดินเดิมจะเกิดขึ้น เพื่อเริ่มต้นการเดินทางแห่งโลกอาคิเราะฮ์",
+        ar: "يَوْمَ تُبَدَّلُ الْأَرْضُ غَيْرَ الْأَرْضِ وَالسَّمَاوَاتُ ۖ وَبَرَزُوا لِلَّهِ الْوَاحِدِ الْقَهَّارِ",
+        th: "“วันที่แผ่นดินจะถูกเปลี่ยนเป็นแผ่นดินอื่นที่ไม่ใช่แผ่นดินนี้ และชั้นฟ้าทั้งหลายก็เช่นเดียวกัน และพวกเขาจะปรากฏตัวต่อหน้าอัลลอฮ์ ผู้ทรงเอกะ ผู้ทรงพิชิต” (ซูเราะฮ์อิบรอฮีม 14:48)"
+      }
+    ];
+
+    function renderCosmologyModal(container) {
+      container.innerHTML = `
+        <div class="glass-panel">
+          <div class="stage-Buttons" id="cosmoStageBtns">
+            ${COSMO_STAGES.map((s, idx) => `<button class="stage-btn ${idx===0?'active':''}" onclick="setCosmoStage(${idx})">${s.name}</button>`).join('')}
+          </div>
+
+          <div class="sim-canvas-wrap">
+            <canvas id="cosmo3dCanvas"></canvas>
+          </div>
+
+          <div class="grid-2" style="margin-bottom:14px;">
+            <div class="stat-card">
+              <div class="lbl">ช่วงเวลาวิวัฒนาการจักรวาล</div>
+              <div class="val" id="cosmoTimeVal">${COSMO_STAGES[0].time}</div>
+            </div>
+            <div class="stat-card">
+              <div class="lbl">อุณหภูมิพื้นหลังจักรวาล (T_univ)</div>
+              <div class="val" id="cosmoTempVal">${COSMO_STAGES[0].temp}</div>
+            </div>
+          </div>
+
+          <p id="cosmoDescText" style="font-size:15px;line-height:1.65;margin-bottom:16px;color:#e4e4e7;">
+            ${COSMO_STAGES[0].desc}
+          </p>
+
+          <div class="quran-box">
+            <div class="quran-arabic" id="cosmoArText">${COSMO_STAGES[0].ar}</div>
+            <div class="quran-thai" id="cosmoThText">${COSMO_STAGES[0].th}</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="glass-panel">
+            <h3 style="color:var(--peach);margin-bottom:12px;">ตารางวิวัฒนาการอุณหภูมิและเวลาของจักรวาล</h3>
+            <table class="data-table">
+              <thead>
+                <tr><th>เวลาหลังบิกแบง</th><th>อุณหภูมิ (T_univ)</th><th>สภาวะของสสารในเอกภพ</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>10⁻⁶ วินาที</td><td>&gt; 10¹² K</td><td>พลาสมาของควาร์ก กลูออน อิเล็กตรอน และนิวทริโน</td></tr>
+                <tr><td>10⁻⁴ วินาที</td><td>10¹² K</td><td>อนุภาคเริ่มก่อตัวเป็นโปรตอนและนิวตรอน</td></tr>
+                <tr><td>3 นาที</td><td>10⁹ K</td><td>สร้างนิวเคลียสของดิวเทอเรียม ฮีเลียม และลิเทียม</td></tr>
+                <tr><td>4 × 10⁵ ปี (4 แสนปี)</td><td>4,000 K</td><td>เริ่มสร้างอะตอมที่เป็นกลาง หมอกควันจักรวาล (ดุคอน)</td></tr>
+                <tr><td>10⁹ ปี (1 พันล้านปี)</td><td>20 K – 3 K</td><td>แรงโน้มถ่วงรวมกลุ่มก๊าซเกิดเป็นดาวฤกษ์และกาแล็กซี</td></tr>
+                <tr><td>ปัจจุบัน (~1.38–1.5×10¹⁰ ปี)</td><td>3 K (2.73 K)</td><td>การหลอมนิวเคลียร์สร้างธาตุหนัก และกาแล็กซีขยายตัวถอยห่าง</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="glass-panel">
+            <h3 style="color:var(--peach);margin-bottom:12px;">วิวัฒนาการดาวฤกษ์ & ขีดจำกัดจันทราเสการ์</h3>
+            <p style="font-size:14px;line-height:1.7;color:#ddd;margin-bottom:12px;">
+              ดาวฤกษ์กำเนิดจากการยุบตัวของเนบิวลาก๊าซไฮโดรเจนด้วยแรงโน้มถ่วงจนเกิดปฏิกิริยานิวเคลียร์ฟิวชันหลอมไฮโดรเจนเป็นฮีเลียม เมื่อเชื้อเพลิงหมดลง วาระสุดท้ายของดาวฤกษ์จะขึ้นอยู่กับมวลเทียบกับ<strong>ขีดจำกัดจันทราเสการ์ (ประมาณ 1.4 – 1.5 เท่าของมวลดวงอาทิตย์)</strong>:
+            </p>
+            <ul style="font-size:13.8px;line-height:1.75;color:#ccc;padding-left:18px;">
+              <li><strong>ดาวแคระขาว (White Dwarf):</strong> มวลหลังยุบตัวน้อยกว่าขีดจำกัดจันทราเสการ์ รัศมีเพียงไม่กี่พันกิโลเมตร ความหนาแน่นหลายร้อยตัน/ลบ.ซม.</li>
+              <li><strong>ดาวนิวตรอน (Neutron Star):</strong> มวลประมาณ 1.5–2 เท่าของดวงอาทิตย์ แรงผลักระหว่างโปรตอนและนิวตรอนต้านแรงโน้มถ่วงไว้ รัศมีไม่กี่สิบกิโลเมตร ความหนาแน่นหลายล้านตัน/ลบ.ซม.</li>
+              <li><strong>ซูเปอร์โนวาและหลุมดำ (Black Hole):</strong> มวลสูงเกินขีดจำกัดจันทราเสการ์ ยุบตัวอย่างรุนแรงจนถึงรัศมีวิกฤตที่แรงโน้มถ่วงเป็นอนันต์ แม้แต่แสงก็ไม่อาจหลุดพ้น เปรียบเสมือนซิงกูลาริตี้ตัวอย่างของวาระสุดท้าย</li>
+            </ul>
+          </div>
+        </div>
+      `;
+
+      initCosmo3DSim();
+    }
+
+    let currentCosmoStage = 0;
+    function setCosmoStage(idx) {
+      currentCosmoStage = idx;
+      document.querySelectorAll('#cosmoStageBtns .stage-btn').forEach((b, i) => {
+        b.classList.toggle('active', i === idx);
+      });
+      const st = COSMO_STAGES[idx];
+      document.getElementById('cosmoTimeVal').textContent = st.time;
+      document.getElementById('cosmoTempVal').textContent = st.temp;
+      document.getElementById('cosmoDescText').textContent = st.desc;
+      document.getElementById('cosmoArText').textContent = st.ar;
+      document.getElementById('cosmoThText').textContent = st.th;
+    }
+
+    function initCosmo3DSim() {
+      const canvas = document.getElementById('cosmo3dCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      currentCosmoStage = 0;
+
+      const particles = Array.from({ length: 420 }, () => {
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+        const r = Math.pow(Math.random(), 0.6) * 220 + 8;
+        return {
+          x: r * Math.sin(phi) * Math.cos(theta),
+          y: r * Math.sin(phi) * Math.sin(theta),
+          z: r * Math.cos(phi),
+          size: Math.random() * 2.2 + 0.8,
+          hue: Math.random() * 45 + 15
+        };
+      });
+
+      let t = 0;
+      function loop() {
+        if (!document.getElementById('cosmo3dCanvas')) return;
+        const rect = canvas.getBoundingClientRect();
+        if (canvas.width !== rect.width || canvas.height !== rect.height) {
+          canvas.width = rect.width;
+          canvas.height = rect.height;
+        }
+        const w = canvas.width, h = canvas.height;
+        const cx = w / 2, cy = h / 2;
+        t += 0.018;
+
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.28)';
+        ctx.fillRect(0, 0, w, h);
+
+        let scaleFactor = 1;
+        if (currentCosmoStage === 0) scaleFactor = 0.04 + Math.sin(t * 6) * 0.01;
+        else if (currentCosmoStage === 1) scaleFactor = 0.45 + (Math.sin(t * 2) * 0.25 + 0.25);
+        else if (currentCosmoStage === 2) scaleFactor = 0.75;
+        else if (currentCosmoStage === 3) scaleFactor = 1.15 + Math.sin(t * 0.8) * 0.2;
+        else if (currentCosmoStage === 4) scaleFactor = Math.max(0.06, 0.9 - ((t * 0.25) % 0.85));
+        else if (currentCosmoStage === 5) scaleFactor = 0.95;
+
+        const grad = ctx.createRadialGradient(cx, cy, 2, cx, cy, currentCosmoStage === 2 ? 180 : 110);
+        if (currentCosmoStage === 2) {
+          grad.addColorStop(0, 'rgba(242, 138, 42, 0.55)');
+          grad.addColorStop(0.5, 'rgba(180, 60, 20, 0.25)');
+          grad.addColorStop(1, 'transparent');
+        } else if (currentCosmoStage === 5) {
+          grad.addColorStop(0, 'rgba(120, 220, 255, 0.65)');
+          grad.addColorStop(1, 'transparent');
+        } else {
+          grad.addColorStop(0, 'rgba(255, 210, 150, 0.85)');
+          grad.addColorStop(0.4, 'rgba(238, 127, 32, 0.28)');
+          grad.addColorStop(1, 'transparent');
+        }
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(cx, cy, 180, 0, Math.PI * 2);
+        ctx.fill();
+
+        const rotY = t * (currentCosmoStage === 4 ? -1.8 : 0.6);
+        const cosY = Math.cos(rotY), sinY = Math.sin(rotY);
+
+        for (const p of particles) {
+          const px = p.x * scaleFactor;
+          const py = p.y * scaleFactor * (currentCosmoStage === 4 ? 0.35 : 1);
+          const pz = p.z * scaleFactor;
+
+          const rx = px * cosY - pz * sinY;
+          const rz = px * sinY + pz * cosY;
+          const perspective = 420 / (420 + rz + 250);
+          const sx = cx + rx * perspective;
+          const sy = cy + py * perspective;
+
+          ctx.fillStyle = currentCosmoStage === 3
+            ? `hsla(${10 + (p.hue * 0.5)}, 95%, 62%, ${perspective})`
+            : currentCosmoStage === 5
+            ? `hsla(${195 + p.hue}, 90%, 72%, ${perspective})`
+            : `hsla(${p.hue}, 90%, 68%, ${perspective})`;
+
+          ctx.beginPath();
+          ctx.arc(sx, sy, Math.max(0.8, p.size * perspective), 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        activeSimAnim = requestAnimationFrame(loop);
+      }
+      loop();
+    }
+
+    const QURAN_ASTRONOMY_VERSES = [
+      {
+        cat: "การกำเนิดและขยายตัวของจักรวาล (Cosmic Origin & Expansion)",
+        ar: "أَوَلَمْ يَرَ الَّذِينَ كَفَرُوا أَنَّ السَّمَاوَاتِ وَالْأَرْضَ كَانَتَا رَتْقًا فَفَتَقْنَاهُمَا ۖ وَجَعَلْنَا مِنَ الْمَاءِ كُلَّ شَيْءٍ حَيٍّ ۖ أَفَلَا يُؤْمِنُونَ",
+        th: "“และบรรดาผู้ปฏิเสธศรัทธาเหล่านั้นไม่เห็นดอกหรือว่า แท้จริงชั้นฟ้าทั้งหลายและแผ่นดินนั้นแต่ก่อนนี้รวมติดเป็นอันเดียวกัน (ร็อตก็อ) แล้วเราได้แยกมันทั้งสองออกจากกัน (ฟัตก็อ) และเราได้ทำให้ทุกสิ่งมีชีวิตมาจากน้ำ ดังนั้นพวกเขาจะยังไม่ศรัทธาอีกหรือ”",
+        ref: "ซูเราะฮ์อัล-อัมบิยาอ์ (21) : 30 — บ่งชี้ถึงสภาวะเอกฐานเดิม (Singularity / ร็อตก็อ) และการแยกออกระเบิดครั้งใหญ่ (Big Bang / ฟัตก็อ)"
+      },
+      {
+        cat: "การกำเนิดและขยายตัวของจักรวาล (Cosmic Origin & Expansion)",
+        ar: "وَالسَّمَاءَ بَنَيْنَاهَا بِأَيْدٍ وَإِنَّا لَمُوسِعُونَ",
+        th: "“และท้องฟ้านั้นเราได้สร้างมันด้วยพลัง และแท้จริงเราคือผู้ขยายให้กว้างขวาง”",
+        ref: "ซูเราะฮ์อัซ-ซาริยาต (51) : 47 — หลักฐานทางดาราศาสตร์ที่ระบุถึงการขยายตัวอย่างต่อเนื่องของเอกภพ (Expanding Universe)"
+      },
+      {
+        cat: "หมอกควันจักรวาลและการก่อตัว (Cosmic Smoke / Nebula)",
+        ar: "ثُمَّ اسْتَوَىٰ إِلَى السَّمَاءِ وَهِيَ دُخَانٌ فَقَالَ لَهَا وَلِلْأَرْضِ ائْتِيَا طَوْعًا أَوْ كَرْهًا قَالَتَا أَتَيْنَا طَائِعِينَ",
+        th: "“หลังจากนั้นพระองค์ทรงมุ่งสู่ฟากฟ้า ในขณะที่มันเป็นหมอกเพลิง (ดุคอน) อยู่ และตรัสแก่มันและแก่แผ่นดินว่า เจ้าทั้งสองจงมาเถิดจะโดยสมัครใจหรือฝืนใจก็ตาม มันทั้งสองกล่าวว่า เราทั้งสองมาโดยสมัครใจแล้ว”",
+        ref: "ซูเราะฮ์ฟุศศิลัต (41) : 11 — สภาวะก๊าซและฝุ่นควันร้อนในยุคแรกกำเนิดดาวฤกษ์ (Nebula)"
+      },
+      {
+        cat: "ดวงอาทิตย์ ดวงจันทร์ และวงโคจร (Sun, Moon & Orbits)",
+        ar: "الشَّمْسُ وَالْقَمَرُ بِحُسْبَانٍ",
+        th: "“ดวงอาทิตย์และดวงเดือนต่างโคจรไปตามการคำนวณ”",
+        ref: "ซูเราะฮ์อัร-เราะฮ์มาน (55) : 5 — กฎเกณฑ์ทางคณิตศาสตร์และความแม่นยำในการโคจรของเทหวัตถุ"
+      },
+      {
+        cat: "ดวงอาทิตย์ ดวงจันทร์ และวงโคจร (Sun, Moon & Orbits)",
+        ar: "هُوَ الَّذِي جَعَلَ الشَّمْسَ ضِيَاءً وَالْقَمَرَ نُورًا وَقَدَّرَهُ مَنَازِلَ لِتَعْلَمُوا عَدَدَ السِّنِينَ وَالْحِسَابَ ۚ مَا خَلَقَ اللَّهُ ذَٰلِكَ إِلَّا بِالْحَقِّ ۚ يُفَصِّلُ الْآيَاتِ لِقَوْمٍ يَعْلَمُونَ",
+        th: "“พระองค์เป็นผู้ทรงบันดาลให้ดวงอาทิตย์มีประกายสว่างไสว (ฎิยาอ์ - แสงในตัวเอง) และดวงเดือนเป็นรัศมี (นูร - แสงสะท้อน) และทรงกำหนดมันไว้หลายตำแหน่ง (มะนาซิล/ดิถี) เพื่อพวกเจ้าจะได้ทราบจำนวนปีและการคำนวณ”",
+        ref: "ซูเราะฮ์ยูนุส (10) : 5 — แยกแยะธรรมชาติของดาวฤกษ์กับดวงจันทร์ และการใช้ดิถีคำนวณปฏิทินจันทรคติ"
+      },
+      {
+        cat: "ดวงอาทิตย์ ดวงจันทร์ และวงโคจร (Sun, Moon & Orbits)",
+        ar: "وَالشَّمْسُ تَجْرِي لِمُسْتَقَرٍّ لَّهَا ۚ ذَٰلِكَ تَقْدِيرُ الْعَزِيزِ الْعَلِيمِ ۝ وَالْقَمَرَ قَدَّرْنَاهُ مَنَازِلَ حَتَّىٰ عَادَ كَالْعُرْجُونِ الْقَدِيمِ ۝ لَا الشَّمْسُ يَنبَغِي لَهَا أَن تُدْرِكَ الْقَمَرَ وَلَا اللَّيْلُ سَابِقُ النَّهَارِ ۚ وَكُلٌّ فِي فَلَكٍ يَسْبَحُونَ",
+        th: "“(38) และดวงอาทิตย์โคจรตามวิถีของมัน นั่นคือการกำหนดของผู้ทรงอำนาจผู้ทรงรอบรู้ (39) และดวงจันทร์นั้นเราได้กำหนดให้มันโคจรตามตำแหน่งต่างๆ ของมันไว้ จนกระทั่งมันกลับมีสภาพประหนึ่งกาบอินทผลัมเก่าๆ (40) และทั้งหมดนั้นเวียนว่ายโคจรตามเส้นทาง (ฟะลัก)”",
+        ref: "ซูเราะฮ์ยาซีน (36) : 38–40 — วงโคจร (Falak) และการเปลี่ยนดิถีข้างขึ้นข้างแรม"
+      },
+      {
+        cat: "จันทร์เสี้ยว (ฮิลาล) และการกำหนดเวลาศาสนกิจ",
+        ar: "يَسْأَلُونَكَ عَنِ الْأَهِلَّةِ ۖ قُلْ هِيَ مَوَاقِيتُ لِلنَّاسِ وَالْحَجِّ",
+        th: "“พวกเขาเหล่านั้นจะถามเจ้าเกี่ยวกับดวงจันทร์เสี้ยวเริ่มเดือนใหม่ เจ้าจงตอบว่า มันเป็นเครื่องหมายบอกเวลาแก่มนุษย์และการประกอบพิธีฮัจญ์”",
+        ref: "ซูเราะฮ์อัล-บะเกาะเราะฮ์ (2) : 189 — การใช้ดวงจันทร์เสี้ยว (Hilal) เป็นปฏิทินเวลาและกำหนดฮัจญ์"
+      },
+      {
+        cat: "สัณฐานทรงกลมของโลกและการม้วนกลางคืน-กลางวัน",
+        ar: "خَلَقَ السَّمَاوَاتِ وَالْأَرْضَ بِالْحَقِّ ۖ يُكَوِّرُ اللَّيْلَ عَلَى النَّهَارِ وَيُكَوِّرُ النَّهَارَ عَلَى اللَّيْلِ ۖ وَسَخَّرَ الشَّمْسَ وَالْقَمَرَ ۖ كُلٌّ يَجْرِي لِأَجَلٍ مُّسَمًّى",
+        th: "“พระองค์ทรงสร้างชั้นฟ้าทั้งหลายและแผ่นดินด้วยความจริง พระองค์ทรงให้กลางคืนม้วนคาบเกี่ยวเข้าไปในกลางวัน และทรงให้กลางวันม้วนคาบเกี่ยวเข้าไปในกลางคืน”",
+        ref: "ซูเราะฮ์อัซ-ซุมัร (39) : 5 — คำว่า ยุเกาวิรุ (يكور) บ่งบอกถึงการพันม้วนรอบวัตถุทรงกลม"
+      },
+      {
+        cat: "สัณฐานทรงกลมของโลกและการม้วนกลางคืน-กลางวัน",
+        ar: "أَلَمْ تَرَ أَنَّ اللَّهَ يُولِجُ اللَّيْلَ فِي النَّهَارِ وَيُولِجُ النَّهَارَ فِي اللَّيْلِ وَسَخَّرَ الشَّمْسَ وَالْقَمَرَ كُلٌّ يَجْرِي إِلَىٰ أَجَلٍ مُّسَمًّى",
+        th: "“เจ้ามิเห็นดอกหรือว่า แท้จริงอัลลอฮ์ทรงให้กลางคืนคาบเกี่ยวเข้าในเวลากลางวัน และทรงให้กลางวันคาบเกี่ยวเข้าในเวลากลางคืน และทรงสร้างให้ดวงอาทิตย์และดวงจันทร์เป็นประโยชน์”",
+        ref: "ซูเราะฮ์ลุกมาน (31) : 29 — การสับเปลี่ยนหมุนเวียนอย่างต่อเนื่องบนทรงกลมโลก"
+      },
+      {
+        cat: "แรงโน้มถ่วงและความสมดุลของชั้นฟ้า",
+        ar: "اللَّهُ الَّذِي رَفَعَ السَّمَوَاتِ بِغَيْرِ عَمَدٍ تَرَوْنَهَا ۖ ثُمَّ اسْتَوَىٰ عَلَى الْعَرْشِ ۖ وَسَخَّرَ الشَّمْسَ وَالْقَمَرَ ۖ كُلٌّ يَجْرِي لِأَجَلٍ مُّسَمًّى",
+        th: "“อัลลอฮ์คือผู้ทรงยกชั้นฟ้าทั้งหลายไว้โดยปราศจากเสาค้ำจุนที่พวกเจ้ามองเห็นมัน แล้วทรงสถิตอยู่บนบัลลังก์”",
+        ref: "ซูเราะฮ์อัร-เราะอ์ด (13) : 2 — สอดคล้องกับแรงโน้มถ่วงที่ยึดเหนี่ยวเทหวัตถุในอวกาศ"
+      },
+      {
+        cat: "แรงโน้มถ่วงและความสมดุลของชั้นฟ้า",
+        ar: "وَيُمْسِكُ السَّمَاءَ أَن تَقَعَ عَلَى الْأَرْضِ إِلَّا بِإِذْنِهِ ۚ إِنَّ اللَّهَ بِالنَّاسِ لَرَءُوفٌ رَّحِيمٌ",
+        th: "“และทรงยึดชั้นฟ้ามิให้มันตกลงมาบนแผ่นดิน เว้นแต่โดยอนุมัติของพระองค์ แท้จริงอัลลอฮ์นั้นเป็นผู้ทรงอ่อนโยน ผู้ทรงเมตตาเสมอต่อมนุษย์”",
+        ref: "ซูเราะฮ์อัล-ฮัจญ์ (22) : 65 — ระบบแรงดึงดูดและสมดุลจักรวาล"
+      },
+      {
+        cat: "แรงโน้มถ่วงและความสมดุลของชั้นฟ้า",
+        ar: "إِنَّ اللَّهَ يُمْسِكُ السَّمَاوَاتِ وَالْأَرْضَ أَن تَزُولَا ۚ وَلَئِن زَالَتَا إِنْ أَمْسَكَهُمَا منْ أَحَدٍ مِّن بَعْدِهِ ۚ إِنَّهُ كَانَ حَلِيمًا غَفُورًا",
+        th: "“แท้จริงอัลลอฮ์ทรงยึดชั้นฟ้าทั้งหลายและแผ่นดินมิให้มันตกลงมา (หรือสูญสลาย) และหากมันทั้งสองตกลงมา (สูญสลาย) ไม่มีผู้ใดสามารถยึดมันไว้ได้นอกจากพระองค์”",
+        ref: "ซูเราะฮ์ฟาฏิร (35) : 41 — กฎแห่งความยึดเหนี่ยวของสรรพสิ่งในจักรวาล"
+      },
+      {
+        cat: "การพินิจพิจารณาการสร้างชั้นฟ้าและแผ่นดิน",
+        ar: "إِنَّ فِي خَلْقِ السَّمَوَاتِ وَالْأَرْضِ وَاخْتِلَافِ اللَّيْلِ وَالنَّهَارِ لَآيَاتٍ لِّأُولِي الْأَلْبَابِ ۝ الَّذِينَ يَذْكُرُونَ اللَّهَ قِيَامًا وَقُعُودًا وَعَلَىٰ جُنُوبِهِمْ وَيَتَفَكَّرُونَ فِي خَلْقِ السَّمَوَاتِ وَالْأَرْضِ رَبَّنَا مَا خَلَقْتَ هَٰذَا بَاطِلًا سُبْحَانَكَ فَقِنَا عَذَابَ النَّارِ",
+        th: "“(190) แท้จริงในการสร้างบรรดาชั้นฟ้าและแผ่นดิน และการสับเปลี่ยนของกลางคืนและกลางวันนั้น ย่อมเป็นสัญญาณสำหรับบรรดาผู้มีสติปัญญา (191) คือผู้ที่รำลึกถึงอัลลอฮ์และใคร่ครวญในการสร้างชั้นฟ้าทั้งหลายและแผ่นดินว่า พระองค์มิได้ทรงสร้างสิ่งนี้โดยไร้จุดหมาย”",
+        ref: "ซูเราะฮ์อาลิอิมรอน (3) : 190–191 — หน้าที่ทางปัญญาในการศึกษาดาราศาสตร์"
+      },
+      {
+        cat: "วาระสุดท้ายของจักรวาลและการสร้างใหม่",
+        ar: "يَوْمَ نَطْوِي السَّمَاءَ كَطَيِّ السِّجِلِّ لِلْكُتُبِ ۚ كَمَا بَدَأْنَا أَوَّلَ خَلْقٍ نُّعِيدُهُ ۚ وَعْدًا عَلَيْنَا ۚ إِنَّا كُنَّا فَاعِلِينَ",
+        th: "“วันที่เราจะม้วนท้องฟ้าเสมือนการม้วนแผ่นกระดาษสำหรับบันทึก ดังที่เราได้เริ่มแรกการสร้าง เราจะให้มันกลับคืนมาอีก มันเป็นสัญญาที่เป็นภาระผูกพันกับเรา แท้จริงเราเป็นผู้กระทำอย่างแน่นอน”",
+        ref: "ซูเราะฮ์อัล-อัมบิยาอ์ (21) : 104 — วาระการยุบตัวของเอกภพ (Big Crunch) และการสร้างใหม่"
+      },
+      {
+        cat: "วาระสุดท้ายของจักรวาลและการสร้างใหม่",
+        ar: "يَوْمَ تُبَدَّلُ الْأَرْضُ غَيْرَ الْأَرْضِ وَالسَّمَاوَاتُ ۖ وَبَرَزُوا لِلَّهِ الْوَاحِدِ الْقَهَّارِ",
+        th: "“วันที่แผ่นดินจะถูกเปลี่ยนเป็นแผ่นดินอื่นที่ไม่ใช่แผ่นดินนี้ และชั้นฟ้าทั้งหลายก็เช่นเดียวกัน และพวกเขาจะปรากฏตัวต่อหน้าอัลลอฮ์ ผู้ทรงเอกะ ผู้ทรงพิชิต”",
+        ref: "ซูเราะฮ์อิบรอฮีม (14) : 48 — สภาพแผ่นดินและชั้นฟ้าหลังการฟื้นคืนชีพ"
+      }
+    ];
+
+    function renderQuranModal(container) {
+      container.innerHTML = `
+        <div class="glass-panel">
+          <h3 style="color:var(--peach);margin-bottom:8px;">ความสำคัญของการพินิจพิจารณาฟากฟ้าและแผ่นดินในอัลกุรอาน</h3>
+          <p style="font-size:14.5px;line-height:1.75;color:#ddd;">
+            ในคัมภีร์อัลกุรอานมีคำว่า <strong>“อัส-สะมาอ์ / อัส-สะมาวาต (ท้องฟ้าและชั้นฟ้าทั้งหลาย)”</strong> ปรากฏถึง 310 ตำแหน่ง และคำว่า <strong>“อัล-อัรฎ์ (แผ่นดิน)”</strong> ปรากฏ 461 ตำแหน่ง พร้อมทั้งมีคำถามกระตุ้นให้มนุษย์ใช้สติปัญญาใคร่ครวญ (อะฟะลา ตะอ์กิลูน / ยะตะฟักกะรูน) มากกว่า 300 แห่ง การศึกษาดาราศาสตร์จึงไม่เคยขัดแย้งกับหลักศรัทธา แต่เป็นกุญแจสำคัญในการประจักษ์ถึงความยิ่งใหญ่ของพระผู้ทรงสร้างและใช้ปฏิบัติศาสนกิจอย่างถูกต้อง
+          </p>
+        </div>
+
+        ${QURAN_ASTRONOMY_VERSES.map(v => `
+          <div class="quran-box">
+            <span class="tag-pill" style="margin-bottom:10px;">${v.cat}</span>
+            <div class="quran-arabic">${v.ar}</div>
+            <div class="quran-thai">${v.th}</div>
+            <div class="quran-ref">${v.ref}</div>
+          </div>
+        `).join('')}
+      `;
+    }
+
+    const ISLAMIC_SCHOLARS_DETAILED = [
+      {
+        id: "khwarizmi",
+        no: 1,
+        name: "อบู จาฟาร์ มูหัมหมัด อิบนู มูซา อัล-คาวาริศมี (Al-Khwarizmi)",
+        era: "ค.ศ. 790 – 840 (ฮ.ศ. 210 – 260)",
+        origin: "เมืองคาวาริซึม (Khwarizm — ปัจจุบันคือเมือง Khiva ประเทศอุซเบกิสถาน)",
+        latinName: "Algoritmi / Alchwarizmi",
+        role: "บิดาแห่งพีชคณิต (Algebra) และขั้นตอนวิธี (Algorithm) นักดาราศาสตร์และนักภูมิศาสตร์แห่งสถาบันแห่งปัญญา (Baitul Hikmah)",
+        bio: "มีชื่อเสียงรุ่งเรืองในสมัยเคาะลีฟะฮ์อัล-มะอ์มูน แห่งราชวงศ์อับบาซียะฮ์ ณ กรุงแบกแดด ซึ่งได้ก่อตั้งสถาบันแห่งปัญญา (House of Wisdom) ห้องสมุดขนาดใหญ่ และหอสังเกตการณ์ดาราศาสตร์ อัล-คาวาริศมีและคณะนักวิชาการ (เช่น พี่น้องบานู มูซา) ได้ค้นคว้า แปล และพัฒนาต่อยอดตำราวิทยาศาสตร์กรีกและอินเดีย จนวางรากฐานคณิตศาสตร์และดาราศาสตร์ยุคใหม่ BBC ยกย่องท่านเป็น 1 ใน 10 นักคณิตศาสตร์ผู้ยิ่งใหญ่ที่สุดของโลก และในยุคฟื้นฟูศิลปวิทยาการของยุโรป นักคณิตศาสตร์ชาวอิตาลีมีคำอุทานติดปากว่า “Dixit Algorizmi!” (อัล-คาวาริศมีได้กล่าวไว้เช่นนี้!)",
+        importance: [
+          "คิดค้นวิชาพีชคณิต (Algebra) จากตำรา 'Hisab al-jabr w'al-muqabala' คำว่า อัล-ญับร์ (Al-Jabr) หมายถึง การกลับคืนค่าทำให้สมการทั้งสองข้างเท่ากัน และ อัล-มุกอบะละฮ์ (Al-Muqabala) หมายถึง การเปรียบเทียบสมการทั้งสองข้าง แปลเป็นภาษาละตินในปี ค.ศ. 1140 โดย Robert of Chester และภาษาอังกฤษในปี ค.ศ. 1831 โดย Frederic Rosen",
+          "ใช้วิธีเรขาคณิตช่วยแก้สมการกำลังสอง เช่น สมการ x² + 10x = 39 (ซึ่งท่านเขียนบรรยายว่า 'พื้นที่และสิบเท่าของรากมีค่าเท่ากับ 39 หน่วย') โดยสร้างรูปสี่เหลี่ยมจัตุรัสหาความยาวด้านจนได้คำตอบ x = 3 เพื่อนำไปใช้แบ่งมรดกอิสลาม การค้า กฎหมาย การรังวัดที่ดิน และการขุดคลอง",
+          "วางรากฐานระบบเลขฐานสิบ เลขศูนย์ (0) และทศนิยม จากตำรา 'Kitab al-Jam'a wal-Tafreeq bil Hisab al-Hindi' (ฉบับแปลละตินคือ Algoritmi de numero Indorum) อันเป็นที่มาของคำว่า Algorithm (อัลกอริทึม) และตัวเลขฮินดู-อารบิกที่ใช้กันทั่วโลกในปัจจุบัน",
+          "สร้างตารางค่าไซน์ (Sine Table) ศึกษารูปทรงภาคตัดกรวย (Conic Section) และจัดทำตารางดาราศาสตร์ Zij al-Sindhind ที่ใช้ในโลกมุสลิมและยุโรปยาวนานถึงปี ค.ศ. 1600"
+        ],
+        works: [
+          "Kitab al-Mukhtasar fi Hisab al-Jabr wa-al-Muqabalah (ตำราพีชคณิต)",
+          "Kitab al-Jam'a wal-Tafreeq bil Hisab al-Hindi (ตำราอัลกอริทึมและระบบเลขฮินดู-อารบิก)",
+          "Kitab Surat al-Ard (ตำราภูมิศาสตร์ แผนที่โลก และพิกัดเมืองสำคัญ)",
+          "Zij al-Sindhind (ตารางคำนวณดาราศาสตร์ ดวงอาทิตย์ ดวงจันทร์ และดาวเคราะห์)",
+          "Istikhraj Tarikh al-Yahud (ตำราการคำนวณปฏิทิน), Kitab al-Tarikh และ Kitab al-Rukhamat (นาฬิกาแดด)"
+        ]
+      },
+      {
+        id: "battani",
+        no: 2,
+        name: "อบู อับดุลลอฮ์ อัล-บาตานี (Abu Abdullah Al-Battani)",
+        era: "ค.ศ. 858 – 929 (ฮ.ศ. 278 – 349)",
+        origin: "เมืองฮัรรอน และทำงานสังเกตการณ์หลักที่เมืองรักเกาะฮ์ (Raqqa ประเทศซีเรีย)",
+        latinName: "Albategnius / Albatenius",
+        role: "นักดาราศาสตร์ผู้วัดความยาวปีสุริยคติและวิถีโคจรดวงอาทิตย์-ดวงจันทร์ได้แม่นยำระดับโลก",
+        bio: "เป็นหนึ่งในนักดาราศาสตร์ผู้ยิ่งใหญ่ที่สุดของโลกอิสลาม ชาวตะวันตกรู้จักในนาม 'อัลบาติกเนียส (Albategnius)' ท่านใช้เวลาสังเกตการณ์ท้องฟ้าอย่างต่อเนื่องกว่า 40 ปี พัฒนาและปรับปรุงเครื่องมือแอสโทรเลบ (Astrolabe) และแก้ไขความคลาดเคลื่อนในตำราของปโตเลมีด้วยข้อมูลจากการสังเกตการณ์จริง",
+        importance: [
+          "คำนวณความยาวนานของ 1 ปีสุริยคติ (Solar Year) ได้เท่ากับ 365 วัน 5 ชั่วโมง 48 นาที 24 วินาที ซึ่งใกล้เคียงกับค่ามาตรฐานสมัยใหม่มาก",
+          "บุกเบิกการใช้ฟังก์ชันตรีโกณมิติแทนคอร์ดเรขาคณิตแบบกรีก และสร้างตารางค่าโคแทนเจนต์ (Cotangent Table) สำหรับทุกๆ องศา",
+          "ศึกษาและคำนวณการเกิดสุริยุปราคาและจันทรุปราคา (Solar & Lunar Eclipses) อย่างแม่นยำ พร้อมทั้งค้นพบการเคลื่อนที่ของจุดที่ดวงอาทิตย์อยู่ไกลโลกที่สุด (Aphelion)",
+          "ตำราของท่านถูกแปลเป็นภาษาละตินและใช้เป็นตำราหลักในมหาวิทยาลัยยุโรปจนถึงปี ค.ศ. 1500–1600 โดยมีอิทธิพลโดยตรงต่อโคเปอร์นิคัส, ไทโค บราเฮ และเคปเลอร์"
+        ],
+        works: [
+          "Kitab al-Zij al-Sabi' (แปลเป็นภาษาละตินในชื่อ De Scientia Stellarum — De Numeris Stellarum et Motibus)",
+          "Kitab Ma'rifat Matali' al-Buruj Baina Arba' al-Falak (ตำราการขึ้นของกลุ่มดาวจักรราศีในสี่ส่วนของทรงกลมฟ้า)"
+        ]
+      },
+      {
+        id: "farghani",
+        no: 3,
+        name: "อัล-ฟัรฆอนี (Ahmad ibn Muhammad Al-Farghani)",
+        era: "ค.ศ. 860 (ฮ.ศ. 280)",
+        origin: "เมืองฟัรฆอนะฮ์ แคว้นทรานโซกเซียนา (Farghana — ปัจจุบันอยู่ในประเทศอุซเบกิสถาน)",
+        latinName: "Alfraganus",
+        role: "นักดาราศาสตร์แห่งกรุงแบกแดดและไคโร ผู้วางรากฐานตำราการเคลื่อนที่ของวัตถุฟ้าและนาฬิกาแดด",
+        bio: "รู้จักในโลกตะวันตกในชื่อ 'อัลฟรากานัส (Alfraganus)' เป็นนักดาราศาสตร์คนสำคัญในราชสำนักอับบาซียะฮ์ มีบทบาทในการวัดความยาวเส้นเมริเดียนของโลกและออกแบบมาตรวัดระดับน้ำแม่น้ำไนล์ (Nilometer) ณ กรุงไคโร ตำราของท่านเป็นหลักฐานสำคัญที่พิสูจน์ว่าคำว่า 'อิลมู นูจูม (Ilm al-Nujum)' ในยุคทองหมายถึงวิทยาศาสตร์ดาราศาสตร์ ไม่ใช่วิชาหมอดู",
+        importance: [
+          "เรียบเรียงตำราดาราศาสตร์ทรงกลมที่อธิบายการเคลื่อนที่ของเทหวัตถุบนฟากฟ้า ขนาดและระยะห่างของโลก ดวงจันทร์ ดวงอาทิตย์ และดาวเคราะห์อย่างเป็นระบบ",
+          "พัฒนาทฤษฎีและเรขาคณิตการสร้างนาฬิกาแดด (Sundial / Rukhamat) สำหรับใช้กำหนดเวลาละหมาดและเวลาสุริยคติ",
+          "มีอิทธิพลอย่างสูงต่อวงการดาราศาสตร์ยุโรปยุคกลางและยุคฟื้นฟูศิลปวิทยาการ และถูกอ้างอิงสืบเนื่องมาจนถึงปัจจุบัน"
+        ],
+        works: [
+          "Kitab fi al-Harakat al-Samawiya wa Jawami Ilm al-Nujum (The Book on Celestial Motion and Thorough Science of the Stars)",
+          "Kitab Amal al-Rukhamat (Book on Construction of Sundials — ตำราการสร้างนาฬิกาแดด)",
+          "Al-Kamil fi al-Asturlab (ตำราทฤษฎีและการสร้างเครื่องมือแอสโทรเลบ)"
+        ]
+      },
+      {
+        id: "buzjani",
+        no: 4,
+        name: "อบู วาฟา อัล-บุซจานี (Abul Wafa Al-Buzjani)",
+        era: "ค.ศ. 940 – 997 (ฮ.ศ. 360 – 417)",
+        origin: "เมืองบุซจาน แคว้นคุรอซาน (ปัจจุบันอยู่ในประเทศอิหร่าน) และทำงานวิจัยที่กรุงแบกแดด",
+        latinName: "Abul Wafa",
+        role: "นักคณิตศาสตร์และดาราศาสตร์ผู้พัฒนาเอกลักษณ์ตรีโกณมิติและกฎของไซน์บนทรงกลม",
+        bio: "เป็นยอดนักคณิตศาสตร์และนักดาราศาสตร์ผู้สร้างหอดูดาวและเครื่องมือวัดมุมขนาดใหญ่ในกรุงแบกแดด ท่านได้ยกระดับวิชาตรีโกณมิติทรงกลม (Spherical Trigonometry) ให้กลายเป็นศาสตร์ที่แม่นยำสำหรับคำนวณตำแหน่งดวงดาว เวลาละหมาด และทิศกิบลัต",
+        importance: [
+          "คำนวณค่า sin 30° ได้แม่นยำถึงทศนิยมตำแหน่งที่ 8 ซึ่งเป็นความละเอียดสูงที่สุดในยุคนั้น",
+          "ค้นพบเอกลักษณ์ตรีโกณมิติมุมครึ่งเท่าและมุมสองเท่า ได้แก่ 2 sin²(a/2) = 1 - cos(a) และ sin(a) = 2 sin(a/2) cos(a/2)",
+          "ศึกษาฟังก์ชันแทนเจนต์ (Tangent) และค้นพบความแปรผันของการเคลื่อนที่ของดวงจันทร์ (Variation of the Moon) ก่อนหน้า ไทโค บราเฮ (Tycho Brahe) กว่า 600 ปี",
+          "ทำงานร่วมกับ อบู นัศร์ มันซูร (Abu Nasr Mansur, ค.ศ. 970–1036) ค้นพบและพิสูจน์ 'กฎของไซน์ (Sine Law)' คือ a/sin(A) = b/sin(B) = c/sin(C)"
+        ],
+        works: [
+          "Kitab al-Kamil (ตำราดาราศาสตร์สมบูรณ์แบบว่าด้วยการเคลื่อนที่ของดวงดาว)",
+          "Kitab 'Ilm al-Hisab (ตำราคณิตศาสตร์ปฏิบัติสำหรับงานคำนวณ)",
+          "Kitab al-Handasa (ตำราเรขาคณิตประยุกต์และการสร้างเครื่องมือดาราศาสตร์)"
+        ]
+      },
+      {
+        id: "biruni",
+        no: 5,
+        name: "อบู ไรฮาน อัล-ไบรูนี (Abu Raihan Al-Biruni)",
+        era: "ค.ศ. 973 – 1048 (ฮ.ศ. 393 – 468)",
+        origin: "เกิดที่คาวาริซึม (ประเทศอุซเบกิสถาน) และถึงแก่กรรมที่เมืองฆอซนี (Ghazni ประเทศอัฟกานิสถาน)",
+        latinName: "Alberuni",
+        role: "พหูสูตนักฟิสิกส์ ดาราศาสตร์ คณิตศาสตร์ และผู้คิดค้นวิธีวัดรัศมีและเส้นรอบวงโลกด้วยตรีโกณมิติ",
+        bio: "เป็นหนึ่งในนักวิทยาศาสตร์พหูสูตที่ยิ่งใหญ่ที่สุดในประวัติศาสตร์มนุษยชาติ เชี่ยวชาญทั้งฟิสิกส์ ดาราศาสตร์ คณิตศาสตร์ ภูมิศาสตร์ และประวัติศาสตร์ ท่านได้ทำการทดลองและคำนวณทางดาราศาสตร์อย่างเป็นระบบ และได้รับการยกย่องด้วยการพิมพ์ภาพบนดวงตราไปรษณียากรของหลายประเทศและตั้งชื่อหลุมอุกกาบาตบนดวงจันทร์",
+        importance: [
+          "คิดค้นวิธีวัดรัศมีและเส้นรอบวงของโลกได้อย่างแม่นยำโดยไม่ต้องเดินวัดระยะทางไกล เพียงใช้ตรีโกณมิติวัดความสูงของยอดเขาและวัดมุมกดของเส้นขอบฟ้า (Dip of Horizon) จากยอดเขานั้น",
+          "เป็นนักดาราศาสตร์กลุ่มแรกที่เริ่มปฏิเสธทฤษฎีของปโตเลมีที่ยึดว่าโลกหยุดนิ่งเป็นศูนย์กลาง และชี้ให้เห็นว่าทางดาราศาสตร์คณิตศาสตร์สามารถอธิบายด้วยการที่โลกหมุนรอบตัวเองและโคจรรอบดวงอาทิตย์ได้",
+          "พัฒนาทฤษฎีการหาทิศกิบลัตด้วยตรีโกณมิติทรงกลมและการฉายภาพแผนที่ทรงกลม (Map Projection)"
+        ],
+        works: [
+          "Al-Qanun al-Mas'udi (สารานุกรมดาราศาสตร์และคณิตศาสตร์ชิ้นเอกของโลกอิสลาม)",
+          "Kitab al-Tafhim li-Awa'il Sina'at al-Tanjim (ตำราปูพื้นฐานคณิตศาสตร์ เรขาคณิต และดาราศาสตร์ทรงกลม)",
+          "Tahdid Nihayat al-Amakin (ตำราการหาพิกัดละติจูด ลองจิจูด และทิศกิบลัตของเมืองต่างๆ)"
+        ]
+      },
+      {
+        id: "zarqali",
+        no: 6,
+        name: "อบู อิสฮัก อิบราฮีม อิบนู ยะฮ์ยา อัล-ซากาลี (Al-Zarqali)",
+        era: "ค.ศ. 1028 – 1087 (ฮ.ศ. 448 – 507)",
+        origin: "เมืองโทเลโด และกอร์โดบา อาณาจักรอัล-อันดะลุส (สเปน)",
+        latinName: "Arzachel / Azachel",
+        role: "ยอดนักดาราศาสตร์แห่งสเปน ผู้สร้างตารางดาราศาสตร์โทเลโดและแอสโทรเลบสากล (อัศ-เศาะฟีฮะฮ์)",
+        bio: "ชาวตะวันตกรู้จักในนาม 'อาซาเคล (Azachel / Arzachel)' เป็นผู้นำนักดาราศาสตร์แห่งเมืองโทเลโดในยุครุ่งเรืองของอิสลามในสเปน ซึ่งเป็นศูนย์กลางที่ชาวยุโรปเดินทางมาศึกษาและแปลตำราภาษาอาหรับเป็นภาษาละติน",
+        importance: [
+          "สร้าง 'ตารางดาราศาสตร์โทเลโด (Toledo Tables / Al-Zij al-Tulaytali)' ซึ่งมีความแม่นยำสูงและถูกใช้เป็นมาตรฐานการคำนวณตำแหน่งดาวในยุโรปนานหลายศตวรรษ",
+          "ประดิษฐ์เครื่องมือหาตำแหน่งดาวและเวลาแบบสากลที่เรียกว่า 'อัศ-เศาะฟีฮะฮ์ อัซ-ซัรกอลียะฮ์ (Al-Safihah al-Zarqaliyyah / Saphaea)' ซึ่งเป็นแอสโทรเลบที่ใช้งานได้ทุกละติจูดบนโลกโดยไม่ต้องเปลี่ยนแผ่นจานละติจูด",
+          "นิโคลัส โคเปอร์นิคัส (Copernicus) ได้อ้างอิงผลงานและการวัดค่าของอัล-ซากาลีไว้ในตำราปฏวัติวงการดาราศาสตร์ 'De Revolutionibus Orbium Coelestium'"
+        ],
+        works: [
+          "Al-Zij al-Tulaytali (Toledo Astronomical Tables — ตารางดาราศาสตร์โทเลโด)",
+          "Kitab al-Amal bi al-Safihah al-Zijiyyah (ตำราการสร้างและใช้งานแอสโทรเลบสากลอัศ-เศาะฟีฮะฮ์)"
+        ]
+      },
+      {
+        id: "tusi_shatir",
+        no: 7,
+        name: "นะศีรุดดีน อัต-ตูซี (Al-Tusi) & อิบนู อัช-ซาเตร (Ibn ash-Shatir)",
+        era: "อัต-ตูซี: ค.ศ. 1201–1274 | อิบนู อัช-ซาเตร: ค.ศ. 1304–1375",
+        origin: "เมืองฏูส (อิหร่าน) หอดูดาวมะรอเฆาะฮ์ และกรุงดามัสกัส (ซีเรีย)",
+        latinName: "Nasir al-Din al-Tusi & Ibn al-Shatir",
+        role: "ผู้ก่อตั้งหอดูดาวมะรอเฆาะฮ์ และผู้สร้างแบบจำลองวงโคจรที่โคเปอร์นิคัสนำไปใช้ปฏิวัติดาราศาสตร์ยุโรป",
+        bio: "อัล-ดิน อัต-ตูซี ได้สร้างหอสังเกตการณ์ดาราศาสตร์ขนาดใหญ่ที่เมืองมะรอเฆาะฮ์ (Maragha Observatory) ซึ่งมีห้องสมุดบรรจุตำรากว่า 400,000 เล่ม และมีนักวิทยาศาสตร์จากทั่วโลก (รวมถึงจากประเทศจีน) มาร่วมวิจัยด้วยเครื่องมือที่แม่นยำที่สุดในโลกยุคนั้น (ซึ่งยุโรปเพิ่งจะมีเครื่องมือระดับใกล้เคียงกันในสมัยไทโค บราเฮ ปี ค.ศ. 1600) ต่อมาสายวิชาการของอัต-ตูซีได้สืบทอดไปยัง อิบนู อัช-ซาเตร นักดาราศาสตร์และผู้กำหนดเวลาละหมาด (มุวักกิต) ประจำมัสยิดอุมะวีย์แห่งดามัสกัส",
+        importance: [
+          "อัต-ตูซี คิดค้นทฤษฎีทางเรขาคณิต 'คู่ควบตูซี (Tusi Couple)' ที่แปลงการเคลื่อนที่แบบวงกลมสองวงให้เป็นการเคลื่อนที่แนวเส้นตรง และจัดทำตารางดาราศาสตร์อิลคานิก (Ilkhanic Tables) จากการสังเกตการณ์ต่อเนื่อง 12 ปี",
+          "ชำระและปรับปรุงตำราคณิตศาสตร์และดาราศาสตร์ที่แปลจาก ยูคลิด (Euclid), ปโตเลมี (Ptolemy), ธีโอโดเซียส (Theodosius) และอพอลโลเนียส (Apollonius)",
+          "อิบนู อัช-ซาเตร ได้พัฒนาแบบจำลองท้องฟ้าและการโคจรของดวงจันทร์และดาวเคราะห์ขึ้นใหม่แทนที่แบบจำลองของปโตเลมีที่ไม่ถูกต้อง และในเวลาต่อมา นิโคลัส โคเปอร์นิคัส ได้นำแบบจำลองทางคณิตศาสตร์ชุดเดียวกับของอัต-ตูซีและอิบนู อัช-ซาเตร ไปใช้ในทฤษฎีดวงอาทิตย์เป็นศูนย์กลาง (Heliocentric)"
+        ],
+        works: [
+          "Al-Tadhkirah fi 'Ilm al-Hay'ah (Memoir on Astronomy — ตำราดาราศาสตร์และแบบจำลองคู่ควบตูซี)",
+          "Zij-i Ilkhani (Ilkhanic Tables — ตารางเทหวัตถุบนท้องฟ้าแห่งหอดูดาวมะรอเฆาะฮ์)",
+          "Nihayat al-Sul fi Tashih al-Usul และ Zij al-Jadid (ผลงานแบบจำลองวงโคจรของอิบนู อัช-ซาเตร)"
+        ]
+      },
+      {
+        id: "ulughbeg",
+        no: 8,
+        name: "อูลัก เบค (Ulugh Beg)",
+        era: "ค.ศ. 1393 – 1449 (ฮ.ศ. 813 – 869)",
+        origin: "เมืองซามาร์คันด์ (Samarkand — ปัจจุบันอยู่ในประเทศอุซเบกิสถาน)",
+        latinName: "Ulugh Beg",
+        role: "เจ้าชายนักดาราศาสตร์และผู้อำนวยการหอดูดาวซามาร์คันด์ ผู้สร้างเซกส์แทนต์ยักษ์และบัญชีดาวฤกษ์ที่แม่นยำที่สุดก่อนยุคกล้องโทรทรรศน์",
+        bio: "เป็นทั้งผู้ปกครองและนักดาราศาสตร์ผู้เชี่ยวชาญ ท่านได้ก่อตั้งสถาบันการศึกษาและหอดูดาวขนาดมหึมาที่เมืองซามาร์คันด์ (Samarkand Observatory) และสร้างเครื่องวัดมุมเมอริเดียนขนาดยักษ์ฝังลึกลงในชั้นหินที่เรียกว่า 'ฟัครี เซกส์แทนต์ (Fakhri Sextant)' ที่มีรัศมีโค้งกว่า 40 เมตร",
+        importance: [
+          "คำนวณความยาวนานของ 1 ปีดาราคติได้ว่ามี 365 วัน 5 ชั่วโมง 49 นาที 15 วินาที ด้วยความละเอียดสูงยิ่ง",
+          "จัดทำบัญชีตำแหน่งดาวฤกษ์กว่า 1,000 ดวง และตารางตรีโกณมิติค่าไซน์และแทนเจนต์ที่ละเอียดถึงระดับฟิลิปดา",
+          "แต่งตำรา 'Zij-i Djadid Sultani' ซึ่งได้รับการแปลเป็นภาษาละตินและภาษาอังกฤษ (ค.ศ. 1917) และถือเป็นจุดสูงสุดของดาราศาสตร์สังเกตการณ์ด้วยตาเปล่าของโลกอิสลามก่อนส่งต่อไม้ผลัดสู่ยุคฟื้นฟูศิลปวิทยาการในยุโรป"
+        ],
+        works: [
+          "Zij-i-Sultani / Zij-i Djadid Sultani (ตารางดาราศาสตร์และบัญชีดาวฤกษ์แห่งซามาร์คันด์)",
+          "หอดูดาวซามาร์คันด์ และเครื่องวัดมุมยักษ์ Fakhri Sextant"
+        ]
+      }
+    ];
+
+    function renderHistoryModal(container) {
+      container.innerHTML = `
+        <div class="glass-panel">
+          <h3 style="color:var(--peach);margin-bottom:10px;">ความหมายของวิชาอัลฟาลัก (Al-Falak) กับความเข้าใจเรื่อง อิลมู นูจูม (Ilmu Nujum)</h3>
+          <p style="font-size:14.5px;line-height:1.78;color:#e2e2e5;margin-bottom:12px;">
+            คำว่า <strong>ฟาลัก (Falak / فلك)</strong> ในภาษาอาหรับหมายถึง “วงโคจร” ในทางวิชาการหมายถึง <strong>วิชาดาราศาสตร์ (Astronomy)</strong> หรือวิชาฟะละกียะฮ์ ซึ่งเป็นวิทยาศาสตร์ที่ว่าด้วยตำแหน่ง การเคลื่อนที่ และสมบัติของวัตถุฟ้า แบ่งออกเป็น 3 สาขาหลัก ได้แก่ <strong>1. ดาราศาสตร์ทรงกลม (Spherical Astronomy)</strong> ซึ่งเป็นหัวใจของดาราศาสตร์ปฏิบัติสำหรับมุสลิม (ฟาลักชารีอะฮ์) <strong>2. ดาราศาสตร์ฟิสิกส์ (Astrophysics)</strong> และ <strong>3. จักรวาลวิทยา (Cosmology)</strong>
+          </p>
+          <p style="font-size:14.5px;line-height:1.78;color:#e2e2e5;margin-bottom:14px;">
+            วิชาอัลฟาลักเป็นวิชาที่อนุมัติ (ฮาลาล) และเป็นสิ่งจำเป็นสำหรับสังคมมุสลิม ต่างจากวิชาโหราศาสตร์ (Astrology) ที่ใช้ทำนายชะตาชีวิตซึ่งเป็นสิ่งต้องห้าม (ฮะรอม) ในอิสลาม ทั้งนี้ชาวมุสลิมในภาคใต้ของประเทศไทยมักเรียกวิชาหมอดูว่า <em>อิลมู นูจูม (Ilmu Nujum)</em> จนทำให้บางส่วนพลอยเข้าใจผิดว่าวิชาดาราศาสตร์เป็นวิชาเดียวกับหมอดู (มุนัจญิมีน) ทั้งที่ความจริงคำว่า <strong>อัล-นูจูม (Al-Nujum)</strong> ในภาษาอาหรับแปลว่า “ดวงดาว” และคำว่า <em>อิลมู อัล-นูจูม</em> ในตำราดาราศาสตร์ยุคทอง (เช่น ตำราของอัล-ฟัรฆอนี) หมายถึงวิทยาศาสตร์ของดวงดาว การคำนวณเวลาขึ้น-ตกของดวงอาทิตย์ ดวงจันทร์ หรือการเกิดอุปราคา จึงเป็นการคำนวณตามกฎเกณฑ์ทางธรรมชาติของอัลลอฮ์ที่แน่นอน (Exact / Qat'i) ไม่ใช่การทำนายโชคชะตาแต่อย่างใด
+          </p>
+          <div class="grid-3">
+            <div class="stat-card"><div class="lbl">ความจำเป็นประการที่ 1–2</div><div style="font-weight:600;margin-top:6px;">กำหนดเวลาละหมาด (ศอลาต) ทั้ง 5 เวลาในแต่ละวัน และกำหนดทิศกิบลัตทั่วโลก</div></div>
+            <div class="stat-card"><div class="lbl">ความจำเป็นประการที่ 3–4</div><div style="font-weight:600;margin-top:6px;">กำหนดวันเริ่มต้นและสิ้นสุดเดือนกอมารียะฮ์ วันเริ่มถือศีลอดรอมฎอน อีดิ้ลฟิตรี และอีดิ้ลอัฎฮา</div></div>
+            <div class="stat-card"><div class="lbl">ความจำเป็นประการที่ 5</div><div style="font-weight:600;margin-top:6px;">ใช้เป็นข้อมูลทางวิทยาศาสตร์ในการสังเกตจันทร์เสี้ยว (ฮิลาล / Anak Bulan) อย่างถูกต้อง</div></div>
+          </div>
+        </div>
+
+        <!-- Filter Buttons for 8 Golden Age Scholars -->
+        <div class="glass-panel">
+          <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px;">
+            <h3 style="color:var(--peach);">8 นักดาราศาสตร์และคณิตศาสตร์มุสลิมผู้ยิ่งใหญ่ในยุคทอง (ค.ศ. 700 – 1600)</h3>
+            <div class="stage-Buttons" id="scholarFilterBtns" style="margin-bottom:0;">
+              <button class="stage-btn active" type="button" onclick="filterScholars('all', this)">ดูทั้งหมด (8 ท่าน)</button>
+              ${ISLAMIC_SCHOLARS_DETAILED.map(s => `
+                <button class="stage-btn" type="button" onclick="filterScholars('${s.id}', this)">${s.no}. ${s.name.split('(')[0].trim().split(' ').slice(-2).join(' ')}</button>
+              `).join('')}
+            </div>
+          </div>
+
+          <div id="scholarsDetailContainer"></div>
+        </div>
+
+        <!-- Transmission to Europe & Copernicus / Galileo -->
+        <div class="glass-panel" style="margin-bottom:0;">
+          <h3 style="color:var(--peach);margin-bottom:10px;">การถ่ายทอดมรดกดาราศาสตร์อิสลามสู่ยุโรป (ค.ศ. 1200 – 1600)</h3>
+          <p style="font-size:14.2px;line-height:1.76;color:#ddd;margin-bottom:14px;">
+            ในช่วงที่ยุโรปอยู่ในยุคมืดทางวิชาการ โลกมุสลิมเป็นศูนย์กลางของมหาวิทยาลัย หอดูดาว และโรงพยาบาล นักวิชาการยุโรป เช่น <strong>โรเบิร์ต กรอสเซต (Robert Grosseteste, ค.ศ. 1168–1253)</strong> และ <strong>โรเจอร์ เบคอน (Roger Bacon, ค.ศ. 1214–1294)</strong> แห่งมหาวิทยาลัยออกซ์ฟอร์ด รวมถึงผู้แปลอย่าง <strong>โรเบิร์ต แห่งเชสเตอร์ (Robert of Chester)</strong> ได้เดินทางไปศึกษาและแปลตำราภาษาอาหรับจากเมืองโทเลโดและกอร์โดบาในสเปนเป็นภาษาละติน ฝรั่งเศส และอังกฤษ ยาวนานกว่า 400 ปี จนจุดประกายยุคฟื้นฟูศิลปวิทยาการ (Renaissance) โดยมีนักดาราศาสตร์ยุโรป 2 ท่านที่ได้รับอิทธิพลโดยตรงจากตำรามุสลิม:
+          </p>
+          <div class="grid-2">
+            <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:16px;padding:16px;">
+              <h4 style="color:#ffd7ae;margin-bottom:6px;">1. นิโคลัส โคเปอร์นิคัส (Nicolaus Copernicus, ค.ศ. 1452–1519)</h4>
+              <p style="font-size:13.5px;line-height:1.7;color:#ccc;">
+                เกิดหลังจากอูลัก เบค เสียชีวิตไม่นาน ในหนังสือ <em>De Revolutionibus Orbium Coelestium</em> ที่เสนอว่าโลกโคจรรอบดวงอาทิตย์ (Heliocentric) โคเปอร์นิคัสได้อ้างอิงชื่อและข้อมูลของ <strong>อัล-ซากาลี (Azachel)</strong> และ <strong>อัล-บาตานี</strong> อีกทั้งยังนำแบบจำลองทางเรขาคณิตของ <strong>อัต-ตูซี (Al-Tusi)</strong> และ <strong>อิบนู อัช-ซาเตร (Ibn ash-Shatir)</strong> มาใช้แทนแบบจำลองเดิมของปโตเลมี
+              </p>
+            </div>
+            <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:16px;padding:16px;">
+              <h4 style="color:#ffd7ae;margin-bottom:6px;">2. กาลิเลโอ กาลิเลอี (Galileo Galilei, ค.ศ. 1564–1642) & ความสอดคล้องของอิสลามกับวิทยาศาสตร์</h4>
+              <p style="font-size:13.5px;line-height:1.7;color:#ccc;">
+                กาลิเลโอยืนยันแนวคิดดวงอาทิตย์เป็นศูนย์กลางจนถูกศาสนจักรโรมันลงโทษคุมขัง ส่งผลให้ยุโรปแยกศาสนาออกจากวิทยาศาสตร์ (Secularism) ในเวลาต่อมา ในทางตรงกันข้าม ตลอดระยะเวลาเกือบพันปีที่อารยธรรมอิสลามรุ่งเรือง ไม่เคยเกิดความขัดแย้งระหว่างศาสนาอิสลามกับวิทยาศาสตร์เลย เพราะอิสลามถือว่ากฎเกณฑ์ธรรมชาติในจักรวาล (Uloom) คือสัญญาณแห่งการสร้างสรรค์ของอัลลอฮ์ที่สอดคล้องกับวะฮ์ยูในอัลกุรอานเสมอ
+              </p>
+            </div>
+          </div>
+        </div>
+      `;
+
+      filterScholars('all');
+    }
+
+    function filterScholars(scholarId, btnEl) {
+      if (btnEl) {
+        document.querySelectorAll('#scholarFilterBtns .stage-btn').forEach(b => b.classList.remove('active'));
+        btnEl.classList.add('active');
+      }
+      const container = document.getElementById('scholarsDetailContainer');
+      if (!container) return;
+
+      const list = scholarId === 'all'
+        ? ISLAMIC_SCHOLARS_DETAILED
+        : ISLAMIC_SCHOLARS_DETAILED.filter(s => s.id === scholarId);
+
+      container.innerHTML = list.map(s => `
+        <div class="glass-panel" style="border-left:4px solid var(--orange);margin-bottom:16px;">
+          <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px;">
+            <div>
+              <span class="tag-pill">ปราชญ์ท่านที่ ${s.no} • ${s.era}</span>
+              <h4 style="font-size:19px;color:#fff;margin-top:6px;">${s.name}</h4>
+              <div style="font-size:13px;color:var(--peach);margin-top:2px;">
+                <strong>บทบาทสำคัญ:</strong> ${s.role} | <strong>ชื่อในตำรายุโรป:</strong> ${s.latinName}
+              </div>
+            </div>
+            <div style="font-size:12.5px;color:#bbb;background:rgba(0,0,0,0.45);padding:6px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);">
+              📍 ถิ่นกำเนิด/ศูนย์วิจัย: ${s.origin}
+            </div>
+          </div>
+
+          <p style="font-size:14px;line-height:1.75;color:#e4e4e7;margin-bottom:14px;">
+            ${s.bio}
+          </p>
+
+          <div class="grid-2">
+            <div style="background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:14px 16px;">
+              <strong style="color:#86efac;display:block;margin-bottom:8px;font-size:13.8px;">🌟 ความสำคัญและการค้นพบทางดาราศาสตร์-คณิตศาสตร์:</strong>
+              <ul style="font-size:13.3px;line-height:1.7;color:#ddd;padding-left:18px;">
+                ${s.importance.map(imp => `<li style="margin-bottom:5px;">${imp}</li>`).join('')}
+              </ul>
+            </div>
+
+            <div style="background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:14px 16px;">
+              <strong style="color:#ffd7ae;display:block;margin-bottom:8px;font-size:13.8px;">📚 ตำราและผลงานสำคัญที่ถูกอ้างอิงระดับโลก:</strong>
+              <ul style="font-size:13.3px;line-height:1.7;color:#ddd;padding-left:18px;">
+                ${s.works.map(w => `<li style="margin-bottom:5px;">${w}</li>`).join('')}
+              </ul>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderStars88Modal(container) {
+      container.innerHTML = `
+        <div class="glass-panel">
+          <h3 style="color:var(--peach);margin-bottom:8px;">บทบาทของกลุ่มดาวและดวงดาวต่อการปฏิบัติศาสนกิจอิสลาม</h3>
+          <p style="font-size:14px;line-height:1.7;color:#ddd;margin-bottom:14px;">
+            องค์การดาราศาสตร์สากล (IAU) แบ่งกลุ่มดาวฤกษ์ทั่วทรงกลมท้องฟ้าออกเป็น <strong>88 กลุ่มดาว</strong> โดยในจำนวนนี้มี <strong>12 กลุ่มดาวจักรราศี (Zodiac)</strong> ที่วางตัวอยู่บนแนวเส้นสุริยวิถี (Ecliptic) ในทางดาราศาสตร์อิสลาม กลุ่มดาวและดาวฤกษ์ใช้ประโยชน์ในการหาทิศเหนือ-ใต้จริงเพื่อกำหนด<strong>ทิศกิบลัต</strong> การวัดมุมสูงของดาวด้วยเครื่องมือแอสโทรเลบเพื่อกำหนด<strong>เวลาละหมาดเวลากลางคืนและเวลาซุบฮิ</strong> และการติดตามตำแหน่ง<strong>สถานีของดวงจันทร์ (มะนาซิลุลกอมัร)</strong> เพื่อคำนวณปฏิทินจันทรคติ
+          </p>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>ค้นหาชื่อกลุ่มดาว (ไทย / อาหรับ / อังกฤษ / ประโยชน์ศาสนกิจ)</label>
+              <input type="text" id="starSearchInput" class="seaglass-input" placeholder="พิมพ์ค้นหา เช่น นายพราน, หมีเล็ก, จักรราศี, กิบลัต, العقرب..." oninput="filterConstellations()" />
+            </div>
+            <div class="form-group" style="max-width:240px;">
+              <label>กรองประเภทกลุ่มดาว</label>
+              <select id="starFilterSelect" class="seaglass-select" onchange="filterConstellations()">
+                <option value="all">แสดงครบทั้ง 88 กลุ่มดาว</option>
+                <option value="zodiac">เฉพาะ 12 กลุ่มดาวจักรราศี (แนวสุริยวิถี)</option>
+                <option value="qibla">กลุ่มดาวสำคัญในการหาทิศกิบลัต & เวลาละหมาด</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="max-height:420px;overflow-y:auto;border-radius:14px;border:1px solid rgba(255,255,255,0.12);">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width:52px;">ลำดับ</th>
+                  <th>ชื่อสากล / ความหมาย</th>
+                  <th>ชื่อภาษาไทย</th>
+                  <th>ชื่อภาษาอาหรับ & คำอ่าน</th>
+                  <th>ประโยชน์ในการปฏิบัติศาสนกิจและดาราศาสตร์อิสลาม</th>
+                </tr>
+              </thead>
+              <tbody id="constellationTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="glass-panel">
+          <h3 style="color:var(--peach);margin-bottom:10px;">ตัวอย่างชื่อดาวฤกษ์สากลที่มีรากศัพท์มาจากภาษาอาหรับ</h3>
+          <div style="overflow-x:auto;">
+            <table class="data-table">
+              <thead>
+                <tr><th>ชื่อสามัญสากล</th><th>ชื่อภาษาอาหรับดั้งเดิม</th><th>ความหมาย</th><th>ตำแหน่งในกลุ่มดาว</th></tr>
+              </thead>
+              <tbody>
+                ${ARABIC_STARS_SAMPLE.map(s => `
+                  <tr>
+                    <td><strong>${s.common}</strong></td>
+                    <td style="color:#ffd8b0;">${s.ar}</td>
+                    <td>${s.mean}</td>
+                    <td>${s.star}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+      filterConstellations();
+    }
+
+    function filterConstellations() {
+      const q = (document.getElementById('starSearchInput')?.value || "").toLowerCase();
+      const mode = document.getElementById('starFilterSelect')?.value || "all";
+      const tbody = document.getElementById('constellationTableBody');
+      if (!tbody) return;
+
+      const keyNavIds = [4,5,7,14,15,17,18,30,38,46,52,60,66,72,73,78,83,84,86];
+      const filtered = CONSTELLATIONS_88.filter(c => {
+        if (mode === 'zodiac' && !c.z) return false;
+        if (mode === 'qibla' && !keyNavIds.includes(c.no)) return false;
+        if (!q) return true;
+        return (
+          c.en.toLowerCase().includes(q) ||
+          c.mean.toLowerCase().includes(q) ||
+          c.th.toLowerCase().includes(q) ||
+          c.ar.includes(q) ||
+          c.tr.toLowerCase().includes(q) ||
+          c.use.toLowerCase().includes(q)
+        );
+      });
+
+      tbody.innerHTML = filtered.map(c => `
+        <tr>
+          <td>${c.no}</td>
+          <td>
+            <strong>${c.en}</strong> ${c.z ? '<span class="tag-pill">จักรราศี</span>' : ''}
+            <div style="font-size:11.5px;color:#aaa;">${c.mean}</div>
+          </td>
+          <td style="font-weight:600;color:#fff;">${c.th}</td>
+          <td>
+            <div style="font-family:Amiri,serif;font-size:18px;color:#ffd7ae;">${c.ar}</div>
+            <div style="font-size:11.5px;color:#aaa;">${c.tr}</div>
+          </td>
+          <td style="font-size:13px;line-height:1.5;color:#ddd;">${c.use}</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderSphereModal(container) {
+      container.innerHTML = `
+        <div class="grid-2">
+          <div class="glass-panel">
+            <h3 style="color:var(--peach);margin-bottom:10px;">1. ระบบพิกัดทรงกลมท้องฟ้า (Celestial Coordinates)</h3>
+            <p style="font-size:13.8px;line-height:1.7;color:#ddd;margin-bottom:10px;">
+              ในทางดาราศาสตร์ปฏิบัติ ท้องฟ้าถูกจำลองเป็นทรงกลมรัศมีอนันต์ที่มีผู้สังเกตอยู่ตรงกลาง โดยแบ่งระบบพิกัดสำคัญออกเป็น:
+            </p>
+            <ul style="font-size:13.5px;line-height:1.75;color:#ccc;padding-left:18px;margin-bottom:14px;">
+              <li><strong>ระบบพิกัดขอบฟ้า (Horizontal System):</strong> บอกตำแหน่งด้วย <strong>มุมเงยหรืออัลติจูด (Altitude, h)</strong> วัดจากขอบฟ้า (0°) ถึงจุดเหนือศีรษะ Zenith (90°) และ <strong>มุมทิศหรืออาซิมุท (Azimuth, A)</strong> วัดจากทิศเหนือไปทางตะวันออก (0°–360°)</li>
+              <li><strong>ระบบพิกัดศูนย์สูตรฟ้า (Celestial Equator System):</strong> บอกตำแหน่งด้วย <strong>ดิคลิเนชัน (Declination, δ)</strong> วัดจากเส้นศูนย์สูตรฟ้าขึ้นเหนือ (+) หรือลงใต้ (-) และ <strong>มุมชั่วโมง (Hour Angle, H)</strong> วัดจากเส้นเมอริเดียนฟ้าส่วนบนไปทางตะวันตก</li>
+              <li><strong>ความสัมพันธ์ของขั้วฟ้าเหนือ (P):</strong> มุมเงยของขั้วฟ้าเหนือจากขอบฟ้าทิศเหนือจะเท่ากับ <strong>ละติจูด (φ)</strong> ของผู้สังเกตเสมอ (∠PON = φ)</li>
+            </ul>
+            <div class="form-group">
+              <label>ทดลองปรับละติจูดผู้สังเกต (φ): <strong id="latSliderVal">6.87° N (ปัตตานี)</strong></label>
+              <input type="range" min="0" max="65" step="0.5" value="6.87" oninput="drawCelestialSphereDiagram(this.value)" style="width:100%;accent-color:var(--orange);" />
+            </div>
+            <canvas id="sphereDiagCanvas" width="460" height="270" style="width:100%;background:#050505;border-radius:14px;margin-top:10px;border:1px solid rgba(255,255,255,0.12);"></canvas>
+          </div>
+
+          <div class="glass-panel">
+            <h3 style="color:var(--peach);margin-bottom:10px;">2. เครื่องคำนวณสามเหลี่ยมทรงกลม (Spherical Triangle Solver)</h3>
+            <p style="font-size:13.5px;line-height:1.65;color:#ccc;margin-bottom:12px;">
+              สามเหลี่ยมทรงกลม ABC เกิดจากส่วนโค้งของวงกลมใหญ่ 3 วงตัดกัน ใช้<strong>กฎของโคไซน์ (Cosine Law)</strong>:
+              <code style="display:block;padding:8px;background:rgba(0,0,0,0.6);border-radius:8px;margin:6px 0;color:#ffd7ae;">cos(a) = cos(b)·cos(c) + sin(b)·sin(c)·cos(A)</code>
+            </p>
+            <div class="form-row">
+              <div class="form-group">
+                <label>ด้าน a (องศา)</label>
+                <input type="number" id="sp_a" class="seaglass-input" value="66.0370" step="0.01" />
+              </div>
+              <div class="form-group">
+                <label>ด้าน b (องศา)</label>
+                <input type="number" id="sp_b" class="seaglass-input" value="56.4123" step="0.01" />
+              </div>
+              <div class="form-group">
+                <label>ด้าน c (องศา)</label>
+                <input type="number" id="sp_c" class="seaglass-input" value="86.4108" step="0.01" />
+              </div>
+            </div>
+            <button class="action-btn" type="button" onclick="solveSphericalSSS()">คำนวณมุมภายใน A, B, C</button>
+            <div id="spResultBox" style="margin-top:16px;"></div>
+          </div>
+        </div>
+      `;
+      drawCelestialSphereDiagram(6.87);
+      solveSphericalSSS();
+    }
+
+    function drawCelestialSphereDiagram(latDeg) {
+      const phi = parseFloat(latDeg);
+      const lbl = document.getElementById('latSliderVal');
+      if (lbl) lbl.textContent = `${phi.toFixed(2)}° N`;
+      const canvas = document.getElementById('sphereDiagCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width, h = canvas.height;
+      const cx = w / 2, cy = h / 2 + 10, R = 100;
+
+      ctx.clearRect(0, 0, w, h);
+
+      ctx.strokeStyle = 'rgba(255,255,255,0.45)';
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.arc(cx, cy, R, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.strokeStyle = '#4ade80';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(cx - R, cy);
+      ctx.lineTo(cx + R, cy);
+      ctx.stroke();
+      ctx.fillStyle = '#4ade80';
+      ctx.font = '12px Inter, sans-serif';
+      ctx.fillText('N (ทิศเหนือ)', cx - R - 62, cy + 4);
+      ctx.fillText('S (ทิศใต้)', cx + R + 8, cy + 4);
+
+      ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - R);
+      ctx.lineTo(cx, cy + R);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#fff';
+      ctx.fillText('Z (จุดเหนือศีรษะ)', cx - 38, cy - R - 8);
+
+      const pAngle = Math.PI + (phi * DEG);
+      const px = cx + R * Math.cos(pAngle);
+      const py = cy + R * Math.sin(pAngle);
+
+      ctx.strokeStyle = '#f28a2a';
+      ctx.lineWidth = 2.4;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(px, py);
+      ctx.stroke();
+
+      ctx.fillStyle = '#f7c69b';
+      ctx.beginPath();
+      ctx.arc(px, py, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillText(`P (ขั้วฟ้าเหนือ φ=${phi}°)`, px - 55, py - 10);
+
+      const eqAngle = pAngle + Math.PI / 2;
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.moveTo(cx - R * Math.cos(eqAngle), cy - R * Math.sin(eqAngle));
+      ctx.lineTo(cx + R * Math.cos(eqAngle), cy + R * Math.sin(eqAngle));
+      ctx.stroke();
+      ctx.fillStyle = '#38bdf8';
+      ctx.fillText('เส้นศูนย์สูตรฟ้า', cx + R * Math.cos(eqAngle) - 30, cy + R * Math.sin(eqAngle) - 8);
+    }
+
+    function solveSphericalSSS() {
+      const a = parseFloat(document.getElementById('sp_a').value) || 0;
+      const b = parseFloat(document.getElementById('sp_b').value) || 0;
+      const c = parseFloat(document.getElementById('sp_c').value) || 0;
+
+      const cosA = (Math.cos(a * DEG) - Math.cos(b * DEG) * Math.cos(c * DEG)) / (Math.sin(b * DEG) * Math.sin(c * DEG));
+      const cosB = (Math.cos(b * DEG) - Math.cos(a * DEG) * Math.cos(c * DEG)) / (Math.sin(a * DEG) * Math.sin(c * DEG));
+      const cosC = (Math.cos(c * DEG) - Math.cos(a * DEG) * Math.cos(b * DEG)) / (Math.sin(a * DEG) * Math.sin(b * DEG));
+
+      const A = Math.acos(Math.max(-1, Math.min(1, cosA))) * RAD;
+      const B = Math.acos(Math.max(-1, Math.min(1, cosB))) * RAD;
+      const C = Math.acos(Math.max(-1, Math.min(1, cosC))) * RAD;
+
+      document.getElementById('spResultBox').innerHTML = `
+        <div class="grid-3">
+          <div class="stat-card"><div class="lbl">มุม A</div><div class="val" style="font-size:19px;">${toDMS(A)}</div><div class="lbl">${A.toFixed(4)}°</div></div>
+          <div class="stat-card"><div class="lbl">มุม B</div><div class="val" style="font-size:19px;">${toDMS(B)}</div><div class="lbl">${B.toFixed(4)}°</div></div>
+          <div class="stat-card"><div class="lbl">มุม C</div><div class="val" style="font-size:19px;">${toDMS(C)}</div><div class="lbl">${C.toFixed(4)}°</div></div>
+        </div>
+      `;
+    }
+
+    function renderHilalModal(container) {
+      container.innerHTML = `
+        <div class="grid-2">
+          <div class="glass-panel">
+            <h3 style="color:var(--peach);margin-bottom:10px;">จำลองการสังเกตจันทร์เสี้ยวแรก (อิสติฮ์ลาล) ณ เวลาหลังดวงอาทิตย์ตก</h3>
+            <p style="font-size:13.8px;line-height:1.65;color:#ddd;margin-bottom:14px;">
+              การขึ้นต้นเดือนกอมารียะฮ์ใหม่ต้องอาศัยการเกิดจันทร์ดับ (อิญติมาอ์) ก่อนดวงอาทิตย์ตก และขณะดวงอาทิตย์ตกดินที่ขอบฟ้าทิศตะวันตก ดวงจันทร์ต้องอยู่เหนือขอบฟ้าโดยมี<strong>มุมเงย (Altitude) ≥ 3°</strong> และ<strong>มุมห่างจากดวงอาทิตย์ (Elongation) ≥ 6.4°</strong> ตามเกณฑ์ MABIMS จึงจะมีโอกาสเห็นจันทร์เสี้ยว (ฮิลาล)
+            </p>
+            <div class="form-group" style="margin-bottom:12px;">
+              <label>ปรับมุมเงยดวงจันทร์เหนือขอบฟ้า (Altitude): <strong id="hilalAltLbl">4.5°</strong></label>
+              <input type="range" id="hilalAltRange" min="0" max="15" step="0.2" value="4.5" oninput="updateHilalSim()" style="width:100%;accent-color:var(--orange);" />
+            </div>
+            <div class="form-group" style="margin-bottom:14px;">
+              <label>ปรับมุมห่างจากดวงอาทิตย์ (Elongation): <strong id="hilalElongLbl">7.2°</strong></label>
+              <input type="range" id="hilalElongRange" min="2" max="18" step="0.2" value="7.2" oninput="updateHilalSim()" style="width:100%;accent-color:var(--orange);" />
+            </div>
+            <div id="hilalStatusBanner" class="quran-box"></div>
+          </div>
+
+          <div class="glass-panel">
+            <h3 style="color:var(--peach);margin-bottom:10px;">ภาพจำลองขอบฟ้าทิศตะวันตกขณะดวงอาทิตย์ตก (มัฆริบ)</h3>
+            <canvas id="hilalHorizonCanvas" width="520" height="320" style="width:100%;border-radius:16px;border:1px solid rgba(255,255,255,0.16);"></canvas>
+          </div>
+        </div>
+      `;
+      updateHilalSim();
+    }
+
+    function updateHilalSim() {
+      const alt = parseFloat(document.getElementById('hilalAltRange')?.value || 4.5);
+      const elong = parseFloat(document.getElementById('hilalElongRange')?.value || 7.2);
+      document.getElementById('hilalAltLbl').textContent = `${alt.toFixed(1)}° (เวลาค้างฟ้า ~${Math.round(alt * 4)} นาที)`;
+      document.getElementById('hilalElongLbl').textContent = `${elong.toFixed(1)}°`;
+
+      const pass = alt >= 3.0 && elong >= 6.4;
+      const banner = document.getElementById('hilalStatusBanner');
+      banner.innerHTML = pass
+        ? `<strong style="color:#4ade80;font-size:16px;">✅ ผ่านเกณฑ์การเห็นจันทร์เสี้ยว (Imkan al-Rukyah / MABIMS)</strong>
+           <p style="font-size:13.5px;color:#ddd;margin-top:4px;">มุมเงย ${alt.toFixed(1)}° (≥ 3°) และมุมห่าง ${elong.toFixed(1)}° (≥ 6.4°) ดวงจันทร์ตกลับขอบฟ้าหลังดวงอาทิตย์ประมาณ ${Math.round(alt * 4)} นาที มีทัศนวิสัยสามารถสังเกตเห็นฮิลาลได้</p>`
+        : `<strong style="color:#f87171;font-size:16px;">⚠️ ต่ำกว่าเกณฑ์การเห็นจันทร์เสี้ยวด้วยตาเปล่า</strong>
+           <p style="font-size:13.5px;color:#ddd;margin-top:4px;">เนื่องจากมุมเงย (${alt.toFixed(1)}°) หรือมุมห่าง (${elong.toFixed(1)}°) ยังไม่พ้นแสงสนธยาของดวงอาทิตย์ ทำให้ยากต่อการสังเกตเห็นจันทร์เสี้ยวในเย็นวันนี้</p>`;
+
+      const canvas = document.getElementById('hilalHorizonCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width, h = canvas.height;
+      const horizonY = h - 55;
+
+      const sky = ctx.createLinearGradient(0, 0, 0, horizonY);
+      sky.addColorStop(0, '#070913');
+      sky.addColorStop(0.55, '#1e1b38');
+      sky.addColorStop(0.85, '#7c2d12');
+      sky.addColorStop(1, '#f97316');
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, w, horizonY);
+
+      ctx.fillStyle = '#050507';
+      ctx.fillRect(0, horizonY, w, h - horizonY);
+
+      const critY = horizonY - (3 * 14);
+      ctx.strokeStyle = 'rgba(74, 222, 128, 0.5)';
+      ctx.setLineDash([6, 5]);
+      ctx.beginPath();
+      ctx.moveTo(0, critY);
+      ctx.lineTo(w, critY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#4ade80';
+      ctx.font = '12px Inter, sans-serif';
+      ctx.fillText('เกณฑ์ขั้นต่ำมุมเงย 3°', 14, critY - 6);
+
+      const sunX = w * 0.42;
+      ctx.fillStyle = 'rgba(251, 146, 60, 0.9)';
+      ctx.beginPath();
+      ctx.arc(sunX, horizonY + 6, 22, Math.PI, 0);
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.fillText('ดวงอาทิตย์ตก (ทิศตะวันตก)', sunX - 65, horizonY + 28);
+
+      const moonY = horizonY - (alt * 14);
+      const moonX = sunX + Math.sqrt(Math.max(0, elong * elong - alt * alt)) * 12;
+
+      ctx.save();
+      ctx.translate(moonX, moonY);
+      ctx.rotate(0.4);
+      ctx.fillStyle = '#fef08a';
+      ctx.beginPath();
+      ctx.arc(0, 0, 12, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#1e1b38';
+      ctx.beginPath();
+      ctx.arc(4, -3, 11.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      ctx.fillStyle = '#fef08a';
+      ctx.fillText(`ฮิลาล (สูง ${alt.toFixed(1)}°, ห่าง ${elong.toFixed(1)}°)`, moonX + 18, moonY + 4);
+    }
+
+    function renderQiblaModal(container) {
+      container.innerHTML = `
+        <div class="glass-panel">
+          <div class="form-row">
+            <div class="form-group">
+              <label>เลือกจังหวัดของคุณ (ครบทั้ง 77 จังหวัดทั่วประเทศไทย)</label>
+              <select id="qiblaProvSelect" class="seaglass-select" onchange="updateQiblaView()">
+                ${THAI_PROVINCES.map((p, i) => `<option value="${i}">${p.name}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+
+          <div class="grid-2" id="qiblaResultContainer"></div>
+        </div>
+      `;
+      updateQiblaView();
+    }
+
+    function updateQiblaView() {
+      const idx = parseInt(document.getElementById('qiblaProvSelect')?.value || 0, 10);
+      const prov = THAI_PROVINCES[idx];
+      const q = computeQiblaData(prov.lat, prov.lon);
+
+      document.getElementById('qiblaResultContainer').innerHTML = `
+        <div>
+          <div class="grid-2" style="margin-bottom:14px;">
+            <div class="stat-card">
+              <div class="lbl">มุมทิศกิบลัต (Azimuth จากทิศเหนือ)</div>
+              <div class="val">${q.azimuth.toFixed(2)}°</div>
+              <div class="lbl">${toDMS(q.azimuth)}</div>
+            </div>
+            <div class="stat-card">
+              <div class="lbl">วัดจากทิศเหนือไปทางตะวันตก</div>
+              <div class="val">${q.westFromNorth.toFixed(2)}° W</div>
+              <div class="lbl">${toDMS(q.westFromNorth)}</div>
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-bottom:14px;">
+            <div class="stat-card">
+              <div class="lbl">ระยะทางโค้งวงกลมใหญ่ถึงกะอ์บะฮ์</div>
+              <div class="val">${Math.round(q.distKm).toLocaleString()} กม.</div>
+              <div class="lbl">มุมที่จุดศูนย์กลางโลก a = ${q.a_deg.toFixed(2)}° (${Math.round(q.arcMin)} ลิปดา)</div>
+            </div>
+            <div class="stat-card">
+              <div class="lbl">พิกัดภูมิศาสตร์ & ละติจูดจีออยด์ (φ')</div>
+              <div class="val" style="font-size:18px;">${prov.lat.toFixed(4)}°N, ${prov.lon.toFixed(4)}°E</div>
+              <div class="lbl">ละติจูดศูนย์กลางโลก φ' = ${q.geocentricLat.toFixed(4)}°N</div>
+            </div>
+          </div>
+
+          <div class="quran-box" style="margin-bottom:0;">
+            <h4 style="color:var(--peach);margin-bottom:6px;">ขั้นตอนการคำนวณด้วยสามเหลี่ยมทรงกลม</h4>
+            <p style="font-size:13px;line-height:1.7;color:#ddd;">
+              1. พิกัดกะอ์บะฮ์ นครมักกะฮ์: φ_M = 21.4225° N, λ_M = 39.8262° E<br/>
+              2. ผลต่างลองจิจูด A = ${prov.lon.toFixed(4)}° - 39.8262° = <strong>${q.dLon.toFixed(4)}°</strong><br/>
+              3. โคละติจูดผู้สังเกต b = 90° - ${prov.lat.toFixed(4)}° = <strong>${q.b.toFixed(4)}°</strong> และโคละติจูดมักกะฮ์ c = 90° - 21.4225° = <strong>${q.c.toFixed(4)}°</strong><br/>
+              4. จากกฎของโคไซน์ <code>cos(a) = cos(b)cos(c) + sin(b)sin(c)cos(A)</code> ได้ระยะเชิงมุม <strong>a = ${q.a_deg.toFixed(4)}°</strong> คิดเป็นระยะทาง ${q.a_deg.toFixed(2)} × 60 × 1.85 = <strong>${Math.round(q.distKm).toLocaleString()} กิโลเมตร</strong>
+            </p>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);border-radius:20px;padding:20px;border:1px solid rgba(255,255,255,0.12);">
+          <svg width="240" height="240" viewBox="0 0 240 240">
+            <circle cx="120" cy="120" r="104" fill="#090808" stroke="rgba(255,255,255,0.22)" stroke-width="2"/>
+            <circle cx="120" cy="120" r="86" fill="none" stroke="rgba(238,127,32,0.25)" stroke-dasharray="4 4"/>
+            <text x="120" y="30" fill="#4ade80" font-size="14" font-weight="700" text-anchor="middle">N (0°)</text>
+            <text x="212" y="125" fill="#aaa" font-size="13" text-anchor="middle">E</text>
+            <text x="120" y="218" fill="#aaa" font-size="13" text-anchor="middle">S</text>
+            <text x="28" y="125" fill="#aaa" font-size="13" text-anchor="middle">W</text>
+            <g transform="rotate(${q.azimuth}, 120, 120)">
+              <polygon points="120,28 112,120 128,120" fill="#f28a2a"/>
+              <polygon points="120,195 114,120 126,120" fill="rgba(255,255,255,0.25)"/>
+              <rect x="111" y="18" width="18" height="18" rx="3" fill="#111" stroke="#f7c69b" stroke-width="2"/>
+            </g>
+            <circle cx="120" cy="120" r="6" fill="#fff"/>
+          </svg>
+          <div style="margin-top:10px;font-weight:600;color:var(--peach);">เข็มทิศกิบลัตจังหวัด${prov.name.split(' ')[0]} (${q.azimuth.toFixed(1)}°)</div>
+        </div>
+      `;
+    }
+
+    function renderPrayerModal(container) {
+      const todayISO = new Date().toISOString().split('T')[0];
+      container.innerHTML = `
+        <div class="glass-panel">
+          <div class="form-row">
+            <div class="form-group">
+              <label>เลือกจังหวัดของคุณ (77 จังหวัด)</label>
+              <select id="prayerProvSelect" class="seaglass-select" onchange="updatePrayerView()">
+                ${THAI_PROVINCES.map((p, i) => `<option value="${i}">${p.name}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-group">
+              <label>เลือกวันที่ต้องการคำนวณ</label>
+              <input type="date" id="prayerDateInput" class="seaglass-input" value="${todayISO}" onchange="updatePrayerView()" />
+            </div>
+          </div>
+
+          <div id="prayerTimesOutput"></div>
+        </div>
+      `;
+      updatePrayerView();
+    }
+
+    function updatePrayerView() {
+      const idx = parseInt(document.getElementById('prayerProvSelect')?.value || 0, 10);
+      const dateStr = document.getElementById('prayerDateInput')?.value;
+      const prov = THAI_PROVINCES[idx];
+      const pt = computePrayerTimes(prov.lat, prov.lon, dateStr);
+
+      document.getElementById('prayerTimesOutput').innerHTML = `
+        <div class="grid-3" style="margin-bottom:18px;">
+          <div class="stat-card"><div class="lbl">ซุบฮิ (Fajr, มุมกด -18°)</div><div class="val">${formatTimeHM(pt.fajr)}</div></div>
+          <div class="stat-card"><div class="lbl">ดวงอาทิตย์ขึ้น (Syuruk)</div><div class="val">${formatTimeHM(pt.sunrise)}</div></div>
+          <div class="stat-card"><div class="lbl">ซุฮ์ริ (Dhuhr, คล้อยเมอริเดียน)</div><div class="val">${formatTimeHM(pt.dhuhr)}</div></div>
+          <div class="stat-card"><div class="lbl">อัศริ (Asr, ความยาวเงาเท่าตัว)</div><div class="val">${formatTimeHM(pt.asr)}</div></div>
+          <div class="stat-card"><div class="lbl">มัฆริบ (Maghrib, ดวงอาทิตย์ตก)</div><div class="val">${formatTimeHM(pt.maghrib)}</div></div>
+          <div class="stat-card"><div class="lbl">อิชาอ์ (Isha, มุมกด -17°)</div><div class="val">${formatTimeHM(pt.isha)}</div></div>
+        </div>
+
+        <div class="quran-box" style="margin-bottom:0;">
+          <h4 style="color:var(--peach);margin-bottom:6px;">พารามิเตอร์ทางดาราศาสตร์ประจำวันของจังหวัด${prov.name.split(' ')[0]}</h4>
+          <p style="font-size:13.5px;line-height:1.7;color:#ddd;">
+            • พิกัดผู้สังเกต: ละติจูด φ = <strong>${prov.lat.toFixed(4)}° N</strong>, ลองจิจูด λ = <strong>${prov.lon.toFixed(4)}° E</strong><br/>
+            • ความต่างเวลาท้องถิ่นเทียบเส้นเวลามาตรฐานประเทศไทย (โซน 7 / ลองจิจูด 105°E): <strong>ช้ากว่า ${pt.lonDiffMin.toFixed(1)} นาที</strong> (1° = 4 นาที)<br/>
+            • ค่าดิคลิเนชันของดวงอาทิตย์ (Declination, δ): <strong>${pt.decl.toFixed(2)}°</strong> | สมการเวลา (Equation of Time): <strong>${pt.eqTimeMin.toFixed(2)} นาที</strong>
+          </p>
+        </div>
+      `;
+    }
+
+    function renderHijriModal(container) {
+      const now = new Date();
+      let yearOpts = '';
+      for (let y = now.getFullYear(); y >= 1920; y--) {
+        yearOpts += `<option value="${y}" ${y === 2003 ? 'selected' : ''}>ค.ศ. ${y} (พ.ศ. ${y + 543})</option>`;
+      }
+
+      const thaiMonths = [
+        "มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน",
+        "กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"
+      ];
+
+      container.innerHTML = `
+        <div class="glass-panel">
+          <h3 style="color:var(--peach);margin-bottom:10px;">1. ค้นหาวันเดือนปีเกิดฮิจเราะห์ศักราชย้อนหลัง (หรือเลือกแปลงวันที่ใดๆ)</h3>
+          <p style="font-size:13.8px;color:#ccc;margin-bottom:14px;">
+            เลือกวัน เดือน และปีคริสต์ศักราช (หรือพุทธศักราช) ของคุณ ระบบจะคำนวณแปลงเป็นวันที่ เดือน และปีฮิจเราะห์ศักราช (ฮ.ศ.) ให้ทันที
+          </p>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>วันที่ (1–31)</label>
+              <select id="birthDaySel" class="seaglass-select" onchange="calculateBirthHijri()">
+                ${Array.from({length:31}, (_,i)=>`<option value="${i+1}" ${i+1===now.getDate()?'selected':''}>วันที่ ${i+1}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-group">
+              <label>เดือน</label>
+              <select id="birthMonthSel" class="seaglass-select" onchange="calculateBirthHijri()">
+                ${thaiMonths.map((m,i)=>`<option value="${i+1}" ${i===now.getMonth()?'selected':''}>${m}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-group">
+              <label>ปีเกิดย้อนหลัง (ค.ศ. / พ.ศ.)</label>
+              <select id="birthYearSel" class="seaglass-select" onchange="calculateBirthHijri()">
+                ${yearOpts}
+              </select>
+            </div>
+            <button class="action-btn" type="button" onclick="calculateBirthHijri()">คำนวณวันฮิจเราะห์</button>
+          </div>
+
+          <div id="birthHijriOutput"></div>
+        </div>
+
+        <div class="glass-panel">
+          <h3 style="color:var(--peach);margin-bottom:10px;">2. ปฏิทินฮิจเราะห์-คริสต์ศักราช รายเดือน</h3>
+          <div id="monthlyHijriGrid"></div>
+        </div>
+      `;
+      calculateBirthHijri();
+    }
+
+    function calculateBirthHijri() {
+      const d = parseInt(document.getElementById('birthDaySel')?.value || 1, 10);
+      const m = parseInt(document.getElementById('birthMonthSel')?.value || 1, 10);
+      const y = parseInt(document.getElementById('birthYearSel')?.value || 2003, 10);
+
+      const res = gregorianToHijri(y, m, d);
+      const curHijri = gregorianToHijri(new Date().getFullYear(), new Date().getMonth() + 1, new Date().getDate());
+      const hijriAge = Math.max(0, curHijri.hy - res.hy);
+
+      document.getElementById('birthHijriOutput').innerHTML = `
+        <div class="quran-box" style="margin-bottom:0;">
+          <div style="font-size:13px;color:var(--sub);">ผลการเทียบปฏิทินจันทรคติอิสลาม (Hijri Calendar)</div>
+          <div style="font-size:clamp(22px,2.5vw,30px);font-weight:800;color:#ffd7ae;margin:8px 0;">
+            ${res.weekday}ที่ ${res.hd} เดือน${res.monthName} ฮิจเราะห์ศักราช ${res.hy}
+          </div>
+          <div style="font-size:14px;color:#ddd;">
+            ตรงกับวันที่ ${d}/${m}/${y} (พ.ศ. ${y + 543}) • Julian Day Number (JD): <strong>${res.jd}</strong> • อายุตามปีฮิจเราะห์ประมาณ <strong>${hijriAge} ปี</strong>
+          </div>
+        </div>
+      `;
+
+      renderMonthlyCalendarGrid(y, m, d);
+    }
+
+    function renderMonthlyCalendarGrid(year, month, selectedDay) {
+      const gridWrap = document.getElementById('monthlyHijriGrid');
+      if (!gridWrap) return;
+      const daysInMonth = new Date(year, month, 0).getDate();
+      const firstDow = new Date(year, month - 1, 1).getDay();
+      const wkHeaders = ["อา.", "จ.", "อ.", "พ.", "พฤ.", "ศ.", "ส."];
+
+      let html = `<div class="cal-grid" style="margin-bottom:6px;">
+        ${wkHeaders.map(w => `<div style="text-align:center;font-size:12px;color:var(--peach);font-weight:600;">${w}</div>`).join('')}
+      </div><div class="cal-grid">`;
+
+      for (let i = 0; i < firstDow; i++) {
+        html += `<div style="opacity:0.2;"></div>`;
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const hj = gregorianToHijri(year, month, day);
+        const isSel = day === selectedDay;
+        html += `
+          <div class="cal-cell ${isSel ? 'today' : ''}">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <strong style="font-size:15px;">${day}</strong>
+              <span class="tag-pill" style="font-size:10.5px;">${hj.hd}</span>
+            </div>
+            <div style="font-size:10.5px;color:#ccc;margin-top:4px;line-height:1.25;">
+              ${hj.monthName.split(' ')[0]} ${hj.hy}
+            </div>
+          </div>
+        `;
+      }
+      html += `</div>`;
+      gridWrap.innerHTML = html;
+    }
+
+    /* --------------------------------------------------------------------
+       MODULE: REFUTING MATERIALISM & ATHEISM (APOLOGETICS)
+       -------------------------------------------------------------------- */
+    const APOLOGETICS_TOPICS = [
+      {
+        id: "p1",
+        tag: "ประเด็นที่ 1: จักรวาลเกิดขึ้นเองจากความว่างเปล่าหรือบังเอิญ?",
+        claim: "ข้ออ้างของกลุ่มวัตถุนิยมและเอทิสต์: “จักรวาลสามารถถือกำเนิดขึ้นมาเองจากความว่างเปล่า (Nothingness) หรือสร้างตัวมันเองขึ้นมาโดยความบังเอิญ ไม่จำเป็นต้องมีพระผู้สร้าง”",
+        scientific: "ในทางฟิสิกส์ดาราศาสตร์ กฎการอนุรักษ์พลังงานและตรรกะเชิงสาเหตุ (Causality) ยืนยันว่า ‘ความว่างเปล่าที่แท้จริง’ ซึ่งไร้ทั้งสสาร พลังงาน กาลเวลา และกฎฟิสิกส์ ไม่สามารถก่อให้เกิดสิ่งใดได้ ส่วนสิ่งที่นักฟิสิกส์บางกลุ่มเรียกว่าสุญญากาศควอนตัม (Quantum Vacuum) แท้จริงไม่ใช่ความว่างเปล่า แต่เป็นสนามพลังงานที่อยู่ภายใต้กฎกลศาสตร์ควอนตัมที่มีอยู่ก่อนแล้ว ยิ่งไปกว่านั้น การขยายตัวของจักรวาลอย่างต่อเนื่องด้วยความเร็วสูงยังต้องอาศัยการเติมเต็มสสารและพลังงานในอวกาศเพื่อรักษาความหนาแน่นเฉลี่ยของเอกภพ ซึ่งวิทยาศาสตร์วัตถุนิยมไม่สามารถระบุแหล่งที่มาของสสารและพลังงานตั้งต้นเหล่านี้ได้",
+        islamic: "อัลกุรอานได้ตั้งคำถามเชิงตรรกะที่เด็ดขาดตั้งแต่มากกว่า 1,400 ปีก่อน โดยชี้ให้เห็นถึงความเปราะบางของข้ออ้างที่ว่าสรรพสิ่งเกิดขึ้นจากความว่างเปล่า หรือมนุษย์และสสารเป็นผู้สร้างตัวเองขึ้นมา เพราะสิ่งที่ไม่มีอยู่ย่อมไม่อาจสร้างสิ่งใดได้ และสิ่งที่มีอยู่ก็ไม่อาจมีอยู่ก่อนตัวมันเองเพื่อสร้างตัวเอง",
+        ar: "أَمْ خُلِقُوا مِنْ غَيْرِ شَيْءٍ أَمْ هُمُ الْخَالِقُونَ ۝ أَمْ خَلَقُوا السَّمَاوَاتِ وَالْأَرْضَ ۚ بَل لَّا يُوقِنُونَ",
+        th: "“หรือว่าพวกเขาถูกสร้างขึ้นมาโดยไม่มีสิ่งใดเป็นผู้สร้าง หรือว่าพวกเขาคือผู้สร้างเสียเอง? หรือว่าพวกเขาได้สร้างชั้นฟ้าทั้งหลายและแผ่นดิน? ทว่าพวกเขาไม่เชื่อมั่นต่างหาก” (ซูเราะฮ์อัฏ-ฏูร 52 : 35–36)"
+      },
+      {
+        id: "p2",
+        tag: "ประเด็นที่ 2: อัลเบิร์ต ไอน์สไตน์ กับความผิดพลาดเรื่อง ‘ค่าคงที่จักรวาล’",
+        claim: "ข้ออ้างในอดีตของนักฟิสิกส์สายวัตถุนิยม: “จักรวาลมีอยู่มาอย่างนิรันดร์ หยุดนิ่ง ไม่เปลี่ยนแปลง (Static & Eternal Universe) จึงไม่มีจุดเริ่มต้นและไม่ต้องมีพระผู้สร้าง”",
+        scientific: "ในปี ค.ศ. 1917 เมื่ออัลเบิร์ต ไอน์สไตน์ (Albert Einstein) ค้นพบทฤษฎีสัมพัทธภาพทั่วไป (General Relativity) สมการคณิตศาสตร์ของเขาได้พยากรณ์อย่างชัดเจนว่า ‘จักรวาลไม่หยุดนิ่ง แต่กำลังขยายตัวหรือหดตัว’ ซึ่งขัดแย้งกับความเชื่อกระแสหลักของนักวิทยาศาสตร์ยุคนั้นที่พยายามปกป้องแนวคิดจักรวาลนิรันดร์ไร้จุดเริ่มต้น ไอน์สไตน์จึงจงใจเติมตัวแปรที่เรียกว่า ‘ค่าคงที่จักรวาล (Cosmological Constant)’ เข้าไปในสมการของตนเองเพื่อฝืนบังคับให้ผลลัพธ์ออกมาว่าจักรวาลคงที่และหยุดนิ่ง จนกระทั่งเมื่อวิลเลม เดอ ซิตเตอร์ (ค.ศ. 1917) และเอ็ดวิน ฮับเบิล (ค.ศ. 1929) พิสูจน์จากการสังเกตการณ์จริงว่าจักรวาลกำลังขยายตัว ไอน์สไตน์จึงต้องยอมจำนนต่อหลักฐานเชิงประจักษ์และออกมายอมรับว่าการใส่ค่าคงที่จักรวาลเพื่อฝืนความจริงเรื่องการขยายตัวของเอกภพคือ ‘ความผิดพลาดทางวิทยาศาสตร์ที่ใหญ่หลวงที่สุดในชีวิตของเขา’",
+        islamic: "ในขณะที่นักฟิสิกส์ชั้นนำของโลกในต้นศตวรรษที่ 20 ยังคงหลงทางอยู่กับความเชื่อว่าจักรวาลหยุดนิ่ง คัมภีร์อัลกุรอานได้ระบุข้อเท็จจริงของการขยายตัวของฟากฟ้าไว้อย่างชัดเจนล่วงหน้าถึง 14 ศตวรรษ",
+        ar: "وَالسَّمَاءَ بَنَيْنَاهَا بِأَيْدٍ وَإِنَّا لَمُوسِعُونَ",
+        th: "“และท้องฟ้านั้นเราได้สร้างมันด้วยพลัง และแท้จริงเราคือผู้ขยายให้กว้างขวางอย่างแน่นอน” (ซูเราะฮ์อัซ-ซาริยาต 51 : 47)"
+      },
+      {
+        id: "p3",
+        tag: "ประเด็นที่ 3: ปรากฏการณ์ดอปเปลอร์ การเลื่อนไปทางสีแดง (Redshift) และกฎของฮับเบิล",
+        claim: "ข้อโต้แย้งของกลุ่มปฏิเสธการสร้าง: “การเคลื่อนที่ของดวงดาวเป็นเพียงการหมุนวนเฉพาะจุด ไม่ได้เป็นหลักฐานว่าจักรวาลมีจุดกำเนิดจากการระเบิดและแยกออก”",
+        scientific: "จากการประยุกต์ใช้ปรากฏการณ์ดอปเปลอร์ (Doppler Effect) กับคลื่นแสงของวัตถุท้องฟ้า ในปี ค.ศ. 1914 และ 1925 สไลเฟอร์ (V.M. Slipher) ได้วิเคราะห์สเปกตรัมแสงของกาแล็กซี 40 แห่งและพบปรากฏการณ์ ‘การเลื่อนไปทางสีแดง (Redshift)’ ซึ่งพิสูจน์ว่ากาแล็กซีเหล่านั้นกำลังเคลื่อนที่ถอยห่างออกจากทางช้างเผือกและถอยห่างออกจากกันด้วยความเร็วสูง ต่อมาในปี ค.ศ. 1929 เอ็ดวิน ฮับเบิล (Edwin Hubble) และมิลตัน ฮิวมาสัน (ค.ศ. 1934) ได้วัดระยะทางและความเร็วของกาแล็กซีภายนอกจนค้นพบ ‘กฎของฮับเบิล (Hubble's Law)’ ที่ว่า ความเร็วในการถอยห่างของกาแล็กซีแปรผันตรงกับระยะห่างของมัน (บางกาแล็กซีถอยห่างด้วยความเร็ว 60,000 ถึง 272,000 กิโลเมตรต่อวินาที) เมื่อเราย้อนเวลาของการขยายตัวนี้กลับไปในอดีต สสาร พลังงาน กาลเวลา และอวกาศทั้งหมดย่อมต้องวิ่งกลับมารวมกัน ณ จุดเริ่มต้นเพียงจุดเดียว (Singularity) เป็นการพิสูจน์อย่างเด็ดขาดว่าจักรวาลมีจุดเริ่มต้น และสิ่งใดที่มีจุดเริ่มต้นย่อมต้องมีผู้ทำให้เริ่มต้นและมีจุดสิ้นสุด",
+        islamic: "หลักฐานจากการย้อนเวลาของกฎฮับเบิลตรงกับคำอธิบายในอัลกุรอานที่ระบุว่าชั้นฟ้าทั้งหลายและแผ่นดินแต่เดิมเคยหลอมรวมติดเป็นเนื้อเดียวกัน (ร็อตก็อ) ก่อนที่พระองค์จะทรงแยกมันออกจากกัน (ฟัตก็อ)",
+        ar: "أَوَلَمْ يَرَ الَّذِينَ كَفَرُوا أَنَّ السَّمَاوَاتِ وَالْأَرْضَ كَانَتَا رَتْقًا فَفَتَقْنَاهُمَا",
+        th: "“และบรรดาผู้ปฏิเสธศรัทธาไม่เห็นดอกหรือว่า แท้จริงชั้นฟ้าทั้งหลายและแผ่นดินนั้นแต่ก่อนนี้รวมติดเป็นอันเดียวกัน แล้วเราได้แยกมันทั้งสองออกจากกัน” (ซูเราะฮ์อัล-อัมบิยาอ์ 21 : 30)"
+      },
+      {
+        id: "p4",
+        tag: "ประเด็นที่ 4: การล่มสลายของทฤษฎีสภาวะคงที่ (Steady State Theory) แห่งเคมบริดจ์",
+        claim: "ข้ออ้างของกลุ่มนักฟิสิกส์เคมบริดจ์ (ทศวรรษ 1950): เฮอร์แมน บอนดี (Hermann Bondi), โทมัส โกลด์ (Thomas Gold) และ เฟรด ฮอยล์ (Fred Hoyle) พยายามเสนอ ‘ทฤษฎีสภาวะคงที่ (Steady State Theory)’ เพื่อหลีกเลี่ยงการยอมรับจุดเริ่มต้นของจักรวาลและการสร้างของพระเจ้า โดยอ้างว่าถึงแม้จักรวาลจะขยายตัว แต่จักรวาลก็ยังคงมีสภาพเหมือนเดิมชั่วนิรันดร์ไม่มีจุดเริ่มต้นและไม่มีจุดจบ",
+        scientific: "ทฤษฎีสภาวะคงที่ของกลุ่มเคมบริดจ์พังทลายลงอย่างสิ้นเชิงเมื่อนักดาราศาสตร์ค้นพบ ‘รังสีไมโครเวฟพื้นหลังของจักรวาล (Cosmic Microwave Background Radiation - CMB)’ ที่อุณหภูมิประมาณ 2.73 เคลวิน (~3 K) ซึ่งเป็นพลังงานความร้อนหลงเหลือจากการระเบิดครั้งใหญ่ในยุคเริ่มต้นของเอกภพ รวมถึงการสำรวจด้วยกล้องโทรทรรศน์อวกาศที่พบว่ากาแล็กซียุคแรกเริ่มมีโครงสร้างและวิวัฒนาการแตกต่างจากกาแล็กซีในปัจจุบัน (ผ่านยุคหมอกควันก๊าซไฮโดรเจนและฮีเลียมเมื่อราว 400,000 ปีหลังบิกแบง) บีบให้วงการฟิสิกส์ทฤษฎีต้องละทิ้งทฤษฎีสภาวะคงที่อย่างถาวร",
+        islamic: "อัลกุรอานได้อธิบายลำดับขั้นวิวัฒนาการของเอกภพไว้ล่วงหน้า ทั้งระยะที่ฟากฟ้าเคยเป็นหมอกควันร้อน (อัด-ดุคอน) และการที่ทุกสิ่งโคจรไปตามวาระที่ถูกกำหนดไว้ ไม่ใช่สภาวะคงที่ไร้จุดจบ",
+        ar: "ثُمَّ اسْتَوَىٰ إِلَى السَّمَاءِ وَهِيَ دُخَانٌ فَقَالَ لَهَا وَلِلْأَرْضِ ائْتِيَا طَوْعًا أَوْ كَرْهًا قَالَتَا أَتَيْنَا طَائِعِينَ",
+        th: "“จากนั้นพระองค์ทรงมุ่งสู่ท้องฟ้าขณะที่มันเป็นควัน (ดุคอน) แล้วพระองค์ได้ตรัสแก่มันและแก่แผ่นดินว่า เจ้าทั้งสองจงมาเถิด จะโดยความสมัครใจหรือฝืนใจก็ตาม ทั้งสองกล่าวว่า เราทั้งสองมาอย่างผู้ยอมจำนนแล้ว” (ซูเราะฮ์ฟุศศิลัต 41 : 11)"
+      },
+      {
+        id: "p5",
+        tag: "ประเด็นที่ 5: ความสมดุลอันละเอียดอ่อนของจักรวาล (Fine-Tuning) ปฏิเสธความบังเอิญ",
+        claim: "ข้ออ้างของกลุ่มวัตถุนิยม: “กฎฟิสิกส์ โครงสร้างของอะตอม และวงโคจรของดวงดาวเกิดขึ้นและจัดระเบียบตัวเองโดยความบังเอิญไร้จุดมุ่งหมาย”",
+        scientific: "ดาราศาสตร์ฟิสิกส์สมัยใหม่พบว่าเอกภพถูกควบคุมด้วยค่าคงที่พื้นฐานทางฟิสิกส์ที่ละเอียดอ่อนอย่างยิ่ง (Fine-Tuned Universe) ทั้งค่าความเข้มของแรงโน้มถ่วง แรงนิวเคลียร์อย่างเข้ม สนามแม่เหล็กที่เชื่อมโยงระหว่างดวงดาว และความหนาแน่นของสสารระหว่างดวงดาว (แม้ในอวกาศจะมีก๊าซเฉลี่ยเพียง 1 อะตอมต่อลูกบาศก์เซนติเมตร แต่ในกาแล็กซีทางช้างเผือกมีมวลรวมของก๊าซและฝุ่นมากกว่ามวลดวงอาทิตย์ถึง 1 หมื่นล้านเท่า) หากอัตราการขยายตัวหลังบิกแบงหรือค่าแรงโน้มถ่วงคลาดเคลื่อนไปเพียงเศษเสี้ยว (เช่น 1 ใน 10⁶⁰) จักรวาลจะยุบตัวกลับทันทีหรือกระจายตัวเร็วเกินไปจนไม่สามารถรวมตัวเป็นดาวฤกษ์หรือสิ่งมีชีวิตได้เลย ความแม่นยำระดับนี้ตั้งแต่หน่วยอะตอมที่เล็กที่สุดไปจนถึงกาแล็กซี أكثر 2 แสนล้านแห่ง เป็นไปไม่ได้ทางคณิตศาสตร์ที่จะเกิดจากความบังเอิญ",
+        islamic: "อัลกุรอานระบุอย่างชัดเจนว่าทุกสิ่งในเอกภพถูกสร้างขึ้นตามสัดส่วนและการคำนวณที่แม่นยำ (บิ-กอดัร / ตักดีร) และทรงวางความสมดุล (อัล-มีซาน) ไว้ในชั้นฟ้า",
+        ar: "وَالسَّمَاءَ رَفَعَهَا وَوَضَعَ الْمِيزَانَ ۝ ... وَخَلَقَ كُلَّ شَيْءٍ فَقَدَّرَهُ تَقْدِيرًا",
+        th: "“และชั้นฟ้านั้นพระองค์ทรงยกมันไว้สูง และทรงวางความสมดุลไว้” (อัร-เราะฮ์มาน 55:7) และ “พระองค์ทรงสร้างทุกสิ่ง แล้วทรงกำหนดสัดส่วนของมันอย่างแม่นยำ” (อัล-ฟุรกอน 25:2)"
+      },
+      {
+        id: "p6",
+        tag: "ประเด็นที่ 6: ข้อจำกัดของการรับรู้ทางวัตถุนิยม กับหลักฐานเชิงประจักษ์ในจักรวาล",
+        claim: "ข้ออ้างของลัทธิประจักษ์นิยมสุดโต่ง (Scientism): “เราจะไม่เชื่อเรื่องการสร้างในครั้งแรกหรือการฟื้นคืนชีพจนกว่าเราจะมองเห็นมันด้วยตาหรือทดลองซ้ำในห้องปฏิบัติการได้โดยตรง”",
+        scientific: "ในทางปรัชญาวิทยาศาสตร์ เหตุการณ์เอกฐานในอดีตอย่างจุดกำเนิดของเอกภพ (t = 0) ไม่ใช่สิ่งที่มนุษย์คนใดสามารถย้อนเวลากลับไปยืนดูด้วยตาตนเองได้ นักวิทยาศาสตร์จึงไม่ได้ใช้วิธี ‘มองเห็นเหตุการณ์ตอนเกิดบิกแบงโดยตรง’ แต่ใช้วิธีสังเกต ‘ร่องรอยและหลักฐานเชิงประจักษ์ที่หลงเหลืออยู่’ บนท้องฟ้าและแผ่นดิน เช่น การเลื่อนทางสีแดงของสเปกตรัมดาว รังสีพื้นหลัง 3 เคลวิน และโครงสร้างธรณีวิทยา เพื่อสรุปย้อนกลับไปหาความจริงของการสร้าง ดังนั้น การที่กลุ่มวัตถุนิยมยอมรับบิกแบงจากร่องรอยหลักฐานโดยไม่เคยเห็นด้วยตา แต่กลับปฏิเสธพระผู้สร้างและการสร้างครั้งใหม่โดยอ้างว่ามองไม่เห็นด้วยตา จึงเป็นความย้อนแย้งในตัวเอง",
+        islamic: "อัลลอฮ์ทรงชี้แจงความจริงข้อนี้ไว้ในอัลกุรอานว่า ไม่มีมนุษย์หรือญินคนใดได้ไปยืนเป็นพยานในขณะสร้างชั้นฟ้าและแผ่นดิน แต่พระองค์ทรงวางสัญญาณและร่องรอยไว้ในแผ่นดินและฟากฟ้าเพื่อให้ผู้มีปัญญาเดินทางสำรวจและตรึกตรองว่าพระองค์ทรงเริ่มต้นการสร้างอย่างไร และพระองค์ผู้ทรงสร้างครั้งแรกย่อมทรงสามารถนำมันกลับมาสร้างใหม่อีกครั้งได้อย่างง่ายดาย",
+        ar: "مَّا أَشْهَدتُّهُمْ خَلْقَ السَّمَاوَاتِ وَالْأَرْضِ وَلَا خَلْقَ أَنفُسِهِمْ ... قُلْ سِيرُوا فِي الْأَرْضِ فَانظُرُوا كَيْفَ بَدَأَ الْخَلْقَ ۚ ثُمَّ اللَّهُ يُنشِئُ النَّشْأَةَ الْآخِرَةَ",
+        th: "“ข้ามิได้ให้พวกเขาเป็นพยานในการสร้างชั้นฟ้าทั้งหลายและแผ่นดิน และมิใช่ในการสร้างตัวของพวกเขาเอง” (อัล-กะฮ์ฟิ 18:51) “จงกล่าวเถิดว่า พวกท่านจงเดินทางไปในแผ่นดิน แล้วพิจารณาดูเถิดว่า พระองค์ทรงเริ่มแรกการสร้างมาอย่างไร หลังจากนั้นอัลลอฮ์จะทรงบันดาลให้เกิดการสร้างในครั้งสุดท้าย” (อัล-อันกะบูต 29:20)"
+      }
+    ];
+
+    function renderApologeticsModal(container) {
+      container.innerHTML = `
+        <div class="glass-panel">
+          <h3 style="color:var(--peach);margin-bottom:8px;">จุดยืนของอารยธรรมอิสลาม vs อารยธรรมวัตถุนิยมต่อประเด็นการกำเนิดจักรวาล</h3>
+          <p style="font-size:14.2px;line-height:1.75;color:#ddd;margin-bottom:14px;">
+            อารยธรรมวัตถุนิยมร่วมสมัยพยายามอธิบายจักรวาลโดยจำกัดอยู่เฉพาะสิ่งที่สัมผัสได้ด้วยประสาทสัมผัสทางวัตถุ และในอดีตได้พยายามปกป้องทฤษฎี<strong>จักรวาลหยุดนิ่งและเป็นนิรันดร์ (Static & Eternal Universe)</strong> เพื่อใช้เป็นข้ออ้างปฏิเสธการสร้างสรรค์ของพระเจ้า ทว่าการค้นพบทางดาราศาสตร์ฟิสิกส์ตั้งแต่ศตวรรษที่ 20 เป็นต้นมา ทั้งทฤษฎีสัมพัทธภาพ ปรากฏการณ์ดอปเปลอร์ กฎของฮับเบิล และรังสีพื้นหลังของจักรวาล ได้หักล้างความเชื่อของนักวัตถุนิยมลงทีละประเด็น และกลับมายืนยันสัจธรรมที่อัลกุรอานได้ประทานไว้ล่วงหน้ากว่า 1,400 ปีอย่างสมบูรณ์
+          </p>
+
+          <div class="stage-Buttons" id="apologeticsTabBtns">
+            <button class="stage-btn active" type="button" onclick="filterApologetics('all', this)">แสดงครบทั้ง 6 ประเด็นหลัก</button>
+            <button class="stage-btn" type="button" onclick="filterApologetics('p1', this)">1. โลกและจักรวาลเกิดเอง?</button>
+            <button class="stage-btn" type="button" onclick="filterApologetics('p2', this)">2. ค่าคงที่ของไอน์สไตน์</button>
+            <button class="stage-btn" type="button" onclick="filterApologetics('p3', this)">3. ดอปเปลอร์ & กฎฮับเบิล</button>
+            <button class="stage-btn" type="button" onclick="filterApologetics('p4', this)">4. ทฤษฎีสภาวะคงที่ล่มสลาย</button>
+            <button class="stage-btn" type="button" onclick="filterApologetics('p5', this)">5. ความสมดุล Fine-Tuning</button>
+            <button class="stage-btn" type="button" onclick="filterApologetics('p6', this)">6. ข้อจำกัดประจักษ์นิยม</button>
+          </div>
+        </div>
+
+        <div id="apologeticsCardsWrap"></div>
+      `;
+
+      filterApologetics('all');
+    }
+
+    function filterApologetics(topicId, btnEl) {
+      if (btnEl) {
+        document.querySelectorAll('#apologeticsTabBtns .stage-btn').forEach(b => b.classList.remove('active'));
+        btnEl.classList.add('active');
+      }
+      const wrap = document.getElementById('apologeticsCardsWrap');
+      if (!wrap) return;
+
+      const list = topicId === 'all'
+        ? APOLOGETICS_TOPICS
+        : APOLOGETICS_TOPICS.filter(item => item.id === topicId);
+
+      wrap.innerHTML = list.map(item => `
+        <div class="glass-panel" style="border-left:4px solid var(--orange);">
+          <span class="tag-pill" style="margin-bottom:10px;">${item.tag}</span>
+
+          <div style="background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);border-radius:14px;padding:14px 16px;margin-bottom:14px;">
+            <strong style="color:#fca5a5;display:block;margin-bottom:4px;">❌ ข้ออ้าง / สมมติฐานของฝ่ายวัตถุนิยมและเอทิสต์:</strong>
+            <p style="font-size:14px;line-height:1.65;color:#f3f4f6;">${item.claim}</p>
+          </div>
+
+          <div style="background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.28);border-radius:14px;padding:14px 16px;margin-bottom:14px;">
+            <strong style="color:#7dd3fc;display:block;margin-bottom:4px;">🔬 การพิสูจน์และหักล้างด้วยหลักฐานดาราศาสตร์ฟิสิกส์:</strong>
+            <p style="font-size:14px;line-height:1.72;color:#e5e7eb;">${item.scientific}</p>
+          </div>
+
+          <div style="background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.28);border-radius:14px;padding:14px 16px;margin-bottom:14px;">
+            <strong style="color:#86efac;display:block;margin-bottom:4px;">☪️ คำตอบและสัจธรรมจากคัมภีร์อัลกุรอาน:</strong>
+            <p style="font-size:14px;line-height:1.72;color:#e5e7eb;">${item.islamic}</p>
+          </div>
+
+          <div class="quran-box" style="margin-bottom:0;">
+            <div class="quran-arabic">${item.ar}</div>
+            <div class="quran-thai">${item.th}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    /* --------------------------------------------------------------------
+       MODULE 10: COMMUNITY COMMENTS & DISCUSSION BOARD (ติดต่อ / แสดงความคิดเห็น)
+       -------------------------------------------------------------------- */
+    const DEFAULT_COMMENTS = [
+      {
+        id: "c1",
+        name: "อับดุลเลาะฮ์ ม.",
+        role: "ผู้สนใจดาราศาสตร์อิสลาม",
+        topic: "การกำเนิดจักรวาล & อัลกุรอาน",
+        rating: 5,
+        message: "ตัวจำลอง 3 มิติของการกำเนิดจักรวาลช่วยให้เห็นภาพซูเราะฮ์อัล-อัมบิยาอ์ โองการที่ 30 และซูเราะฮ์ฟุศศิลัต โองการที่ 11 ชัดเจนมากครับ อ่านเข้าใจง่ายและครบถ้วนมาก",
+        time: "2 วันที่ผ่านมา",
+        likes: 14,
+        liked: false,
+        isUser: false
+      },
+      {
+        id: "c2",
+        name: "ฟาฏิมะฮ์ ส.",
+        role: "นักศึกษา",
+        topic: "การคำนวณทิศกิบลัต & เวลาละหมาด",
+        rating: 5,
+        message: "ชอบระบบคำนวณทิศกิบลัตและปฏิทินเทียบวันเกิดเป็นปีฮิจเราะห์มากค่ะ เลือกจังหวัดแล้วแสดงสูตรสามเหลี่ยมทรงกลมให้ศึกษาต่อได้ด้วย",
+        time: "เมื่อวานนี้",
+        likes: 9,
+        liked: false,
+        isUser: false
+      },
+      {
+        id: "c3",
+        name: "ซุลกิฟลี ย.",
+        role: "ครูสอนศาสนาและวิทยาศาสตร์",
+        topic: "ชื่อดวงดาวภาษาอาหรับ 88 กลุ่มดาว",
+        rating: 5,
+        message: "ตารางรวบรวม 88 กลุ่มดาวพร้อมชื่ออาหรับและประโยชน์ในการหาทิศกิบลัตและเวลาละหมาดมีประโยชน์มากสำหรับนำไปใช้ประกอบการสอนวิชาอัลฟาลักครับ",
+        time: "วันนี้",
+        likes: 11,
+        liked: false,
+        isUser: false
+      }
+    ];
+
+    function getStoredComments() {
+      try {
+        const raw = localStorage.getItem('alfalak_community_comments_v1');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch (e) {}
+      return DEFAULT_COMMENTS.slice();
+    }
+
+    function saveStoredComments(list) {
+      try {
+        localStorage.setItem('alfalak_community_comments_v1', JSON.stringify(list));
+      } catch (e) {}
+    }
+
+    let currentStarRating = 5;
+
+    function renderContactModal(container) {
+      const comments = getStoredComments();
+      container.innerHTML = `
+        <div class="glass-panel">
+          <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px;">
+            <div>
+              <h3 style="color:var(--peach);margin-bottom:6px;">💬 ร่วมแสดงความคิดเห็นและแลกเปลี่ยนเรียนรู้ดาราศาสตร์อิสลาม</h3>
+              <p style="font-size:14px;color:#ddd;line-height:1.6;">
+                พื้นที่แบ่งปันความประทับใจ ข้อเสนอแนะ คำถามทางดาราศาสตร์อิสลาม (วิชาอัลฟาลัก) หรือแลกเปลี่ยนมุมมองจากการใช้งานเว็บไซต์
+              </p>
+            </div>
+            <div style="display:flex;gap:12px;">
+              <div class="stat-card" style="padding:10px 18px;min-width:130px;">
+                <div class="lbl">ความคิดเห็นทั้งหมด</div>
+                <div class="val" id="totalCommentsCount" style="font-size:22px;">${comments.length}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <!-- Left: Comment Form -->
+          <div class="glass-panel" style="margin-bottom:0;align-self:start;">
+            <h3 style="color:var(--peach);margin-bottom:12px;">✍️ เขียนความคิดเห็นของคุณ</h3>
+            <form id="commentForm" onsubmit="handlePostComment(event)">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="commentAuthor">ชื่อผู้แสดงความคิดเห็น *</label>
+                  <input type="text" id="commentAuthor" class="seaglass-input" placeholder="ระบุชื่อหรือนามแฝงของคุณ..." required />
+                </div>
+                <div class="form-group">
+                  <label for="commentRole">สถานะ / บทบาท</label>
+                  <select id="commentRole" class="seaglass-select">
+                    <option value="ผู้สนใจดาราศาสตร์อิสลาม">ผู้สนใจดาราศาสตร์อิสลาม</option>
+                    <option value="นักเรียน / นักศึกษา">นักเรียน / นักศึกษา</option>
+                    <option value="ครู / อาจารย์ผู้สอน">ครู / อาจารย์ผู้สอน</option>
+                    <option value="บุคลากรประจำมัสยิด">บุคลากรประจำมัสยิด</option>
+                    <option value="นักดาราศาสตร์สมัครเล่น">นักดาราศาสตร์สมัครเล่น</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="commentTopic">หมวดหมู่ที่พูดถึง</label>
+                  <select id="commentTopic" class="seaglass-select">
+                    <option value="ภาพรวมเว็บไซต์และการออกแบบ">ภาพรวมเว็บไซต์และการออกแบบ</option>
+                    <option value="การกำเนิดจักรวาล & อัลกุรอาน">การกำเนิดจักรวาล & อัลกุรอาน</option>
+                    <option value="ประวัติศาสตร์ดาราศาสตร์อิสลาม">ประวัติศาสตร์ดาราศาสตร์อิสลาม</option>
+                    <option value="ชื่อดวงดาวภาษาอาหรับ 88 กลุ่มดาว">ชื่อดวงดาวภาษาอาหรับ 88 กลุ่มดาว</option>
+                    <option value="การคำนวณทิศกิบลัต & เวลาละหมาด">การคำนวณทิศกิบลัต & เวลาละหมาด</option>
+                    <option value="ปฏิทินฮิจเราะห์ & การดูจันทร์เสี้ยว">ปฏิทินฮิจเราะห์ & การดูจันทร์เสี้ยว</option>
+                    <option value="การตอบโต้แนวคิดวัตถุนิยม & เอทิสต์">การตอบโต้แนวคิดวัตถุนิยม & เอทิสต์</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>ระดับความพึงพอใจ</label>
+                  <div id="starRatingSelect" style="display:flex;gap:6px;height:42px;align-items:center;">
+                    ${[1,2,3,4,5].map(n => `
+                      <button type="button" class="stage-btn ${n<=currentStarRating?'active':''}" style="padding:6px 11px;font-size:14px;" onclick="selectCommentRating(${n})">★ ${n}</button>
+                    `).join('')}
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group" style="margin-bottom:16px;">
+                <label for="commentText">ข้อความแสดงความคิดเห็น *</label>
+                <textarea id="commentText" class="seaglass-textarea" placeholder="แบ่งปันความคิดเห็น คำถาม หรือข้อเสนอแนะของคุณที่นี่..." required></textarea>
+              </div>
+
+              <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
+                <button type="submit" class="action-btn">
+                  💬 โพสต์ความคิดเห็น
+                </button>
+              </div>
+            </form>
+
+            <div id="commentStatusBox" style="display:none;margin-top:14px;" class="quran-box"></div>
+          </div>
+
+          <!-- Right: Live Comments Feed -->
+          <div class="glass-panel" style="margin-bottom:0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+              <h3 style="color:var(--peach);">🌟 ความคิดเห็นจากผู้ใช้งาน</h3>
+              <span style="font-size:12px;color:var(--sub);">เรียงจากล่าสุด</span>
+            </div>
+            <div id="commentsFeedList" style="display:flex;flex-direction:column;gap:14px;max-height:520px;overflow-y:auto;padding-right:4px;"></div>
+          </div>
+        </div>
+      `;
+
+      renderCommentsFeed();
+    }
+
+    function selectCommentRating(rating) {
+      currentStarRating = rating;
+      const wrap = document.getElementById('starRatingSelect');
+      if (!wrap) return;
+      wrap.innerHTML = [1,2,3,4,5].map(n => `
+        <button type="button" class="stage-btn ${n===currentStarRating?'active':''}" style="padding:6px 11px;font-size:14px;" onclick="selectCommentRating(${n})">★ ${n}</button>
+      `).join('');
+    }
+
+    function escapeHtmlStr(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function renderCommentsFeed() {
+      const feed = document.getElementById('commentsFeedList');
+      const countEl = document.getElementById('totalCommentsCount');
+      const comments = getStoredComments();
+      if (countEl) countEl.textContent = comments.length;
+      if (!feed) return;
+
+      if (comments.length === 0) {
+        feed.innerHTML = `<div style="text-align:center;color:#aaa;padding:30px;">ยังไม่มีความคิดเห็น มาร่วมเขียนความคิดเห็นคนแรกกันเลย!</div>`;
+        return;
+      }
+
+      feed.innerHTML = comments.map(c => `
+        <div style="background:rgba(0,0,0,0.48);border:1px solid rgba(255,255,255,0.14);border-left:4px solid var(--orange);border-radius:16px;padding:16px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px;">
+            <div>
+              <strong style="font-size:15px;color:#fff;">${escapeHtmlStr(c.name)}</strong>
+              <span style="font-size:12px;color:var(--sub);margin-left:6px;">• ${escapeHtmlStr(c.role)}</span>
+              <div style="margin-top:4px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+                <span class="tag-pill">${escapeHtmlStr(c.topic)}</span>
+                <span style="color:#facc15;font-size:13px;letter-spacing:1px;">${"★".repeat(c.rating || 5)}${"☆".repeat(5 - (c.rating || 5))}</span>
+              </div>
+            </div>
+            <span style="font-size:11.5px;color:#999;white-space:nowrap;">${escapeHtmlStr(c.time)}</span>
+          </div>
+
+          <p style="font-size:14px;line-height:1.68;color:#ececef;margin:10px 0 12px;white-space:pre-wrap;">${escapeHtmlStr(c.message)}</p>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <button type="button" class="stage-btn ${c.liked ? 'active' : ''}" style="padding:4px 12px;font-size:12px;" onclick="toggleLikeComment('${c.id}')">
+              👍 ถูกใจ (${c.likes || 0})
+            </button>
+            ${c.isUser ? `
+              <button type="button" class="stage-btn" style="padding:4px 10px;font-size:11.5px;color:#fca5a5;border-color:rgba(248,113,113,0.35);" onclick="deleteUserComment('${c.id}')">
+                🗑️ ลบความคิดเห็น
+              </button>
+            ` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function handlePostComment(e) {
+      if (e) e.preventDefault();
+      const nameInput = document.getElementById('commentAuthor');
+      const roleInput = document.getElementById('commentRole');
+      const topicInput = document.getElementById('commentTopic');
+      const textInput = document.getElementById('commentText');
+
+      const name = (nameInput?.value || "").trim();
+      const role = (roleInput?.value || "ผู้ใช้งานทั่วไป").trim();
+      const topic = (topicInput?.value || "ภาพรวมเว็บไซต์").trim();
+      const message = (textInput?.value || "").trim();
+
+      if (!name || !message) return;
+
+      const now = new Date();
+      const timeStr = `${now.toLocaleDateString('th-TH', { day:'numeric', month:'short', year:'numeric' })} เวลา ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')} น.`;
+
+      const comments = getStoredComments();
+      comments.unshift({
+        id: "u_" + Date.now(),
+        name,
+        role,
+        topic,
+        rating: currentStarRating,
+        message,
+        time: timeStr,
+        likes: 0,
+        liked: false,
+        isUser: true
+      });
+
+      saveStoredComments(comments);
+      if (textInput) textInput.value = "";
+      renderCommentsFeed();
+
+      const statusBox = document.getElementById('commentStatusBox');
+      if (statusBox) {
+        statusBox.style.display = 'block';
+        statusBox.innerHTML = `<strong style="color:#4ade80;">✅ โพสต์ความคิดเห็นของคุณเรียบร้อยแล้ว ขอบคุณที่ร่วมแบ่งปันความคิดเห็นครับ!</strong>`;
+      }
+    }
+
+    function toggleLikeComment(commentId) {
+      const comments = getStoredComments();
+      const target = comments.find(c => c.id === commentId);
+      if (target) {
+        target.liked = !target.liked;
+        target.likes = Math.max(0, (target.likes || 0) + (target.liked ? 1 : -1));
+        saveStoredComments(comments);
+        renderCommentsFeed();
+      }
+    }
+
+    function deleteUserComment(commentId) {
+      const comments = getStoredComments().filter(c => c.id !== commentId);
+      saveStoredComments(comments);
+      renderCommentsFeed();
+    }
+  </script>
+</body>
+</html>
